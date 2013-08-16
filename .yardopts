@@ -1,0 +1,3 @@
+--title "Amazon DynamoDB Session Store"
+--exclude /generators/
+--hide-api private
