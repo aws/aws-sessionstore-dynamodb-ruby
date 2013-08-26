@@ -13,7 +13,7 @@
 
 require 'spec_helper'
 
-describe AWS::DynamoDB::SessionStore::GarbageCollection do
+describe AWS::SessionStore::DynamoDB::GarbageCollection do
   def member(min,max)
     member = []
     for i in min..max
@@ -36,7 +36,7 @@ describe AWS::DynamoDB::SessionStore::GarbageCollection do
 
   def collect_garbage
     options = { :dynamo_db_client => dynamo_db_client, :max_age => 100, :max_stale => 100 }
-    AWS::DynamoDB::SessionStore::GarbageCollection.collect_garbage(options)
+    AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
   end
 
   let(:scan_resp1){

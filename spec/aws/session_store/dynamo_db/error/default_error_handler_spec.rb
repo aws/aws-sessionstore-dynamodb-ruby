@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe AWS::DynamoDB::SessionStore do
+describe AWS::SessionStore::DynamoDB do
   include Rack::Test::Methods
 
   instance_exec(&ConstantHelpers)
@@ -24,7 +24,7 @@ describe AWS::DynamoDB::SessionStore do
   end
 
   let(:base_app) { MultiplierApplication.new }
-  let(:app) { AWS::DynamoDB::SessionStore::RackMiddleware.new(base_app, @options) }
+  let(:app) { AWS::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
   let(:client) { double('AWS::DynamoDB::Client') }
 
   context "Error handling for Rack Middleware with default error handler" do

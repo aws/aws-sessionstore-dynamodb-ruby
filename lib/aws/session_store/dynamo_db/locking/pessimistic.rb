@@ -12,11 +12,11 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::DynamoDB::SessionStore::Locking
+module AWS::SessionStore::DynamoDB::Locking
   # This class implements a pessimistic locking strategy for the
   # DynamoDB session handler. Sessions obtain an exclusive lock
   # for reads that is only released when the session is saved.
-  class Pessimistic < AWS::DynamoDB::SessionStore::Locking::Base
+  class Pessimistic < AWS::SessionStore::DynamoDB::Locking::Base
     WAIT_ERROR =
 
     # Saves the session.
@@ -58,7 +58,7 @@ module AWS::DynamoDB::SessionStore::Locking
     # @raise [Error] When time for attempting to get lock has
     #   been exceeded.
     def exceeded_wait_time?(max_attempt_date)
-      lock_error = AWS::DynamoDB::SessionStore::LockWaitTimeoutError
+      lock_error = AWS::SessionStore::DynamoDB::LockWaitTimeoutError
       raise lock_error if Time.now.to_f > max_attempt_date
     end
 

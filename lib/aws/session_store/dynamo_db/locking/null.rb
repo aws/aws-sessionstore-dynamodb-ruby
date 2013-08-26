@@ -12,10 +12,10 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::DynamoDB::SessionStore::Locking
+module AWS::SessionStore::DynamoDB::Locking
   # This class gets and sets sessions
   # without a locking strategy.
-  class Null < AWS::DynamoDB::SessionStore::Locking::Base
+  class Null < AWS::SessionStore::DynamoDB::Locking::Base
     # Retrieve session if it exists from the database by id.
     # Unpack the data once retrieved from the database.
     def get_session_data(env, sid)

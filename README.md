@@ -37,7 +37,7 @@ Ruby file using the following method:
 
     require 'aws-sessionstore-dynamodb'
 
-    AWS::DynamoDB::SessionStore::Table.create_table
+    AWS::SessionStore::DynamoDB::Table.create_table
 
 Run the session store as a Rack middleware in the following way:
 
@@ -46,7 +46,7 @@ Run the session store as a Rack middleware in the following way:
 
     options = { :secret_key => 'SECRET_KEY' }
 
-    use AWS::DynamoDB::SessionStore::RackMiddleware.new(options)
+    use AWS::SessionStore::DynamoDB::RackMiddleware.new(options)
     run SomeRackApp
 
 Note that `:secret_key` is a mandatory configuration option that must be set.
@@ -69,7 +69,7 @@ scalable storage container with a much larger data size limit for session data.
 ### Configuration Options
 
 The following options are available to be set in
-`AWS::DynamoDB::SessionStore::Configuration`, which is used by the
+`AWS::SessionStore::DynamoDB::Configuration`, which is used by the
 `RackMiddleware` class. These options can be set in the YAML configuration
 file in a Rails application, directly by Ruby code, or environment variables.
 
@@ -203,7 +203,7 @@ You can create your own Rake task for garbage collection similar to below:
     desc 'Perform Garbage Collection'
     task :garbage_collect do |t|
      options = {:max_age => 3600*24, max_stale => 5*3600 }
-     AWS::DynamoDB::SessionStore::GarbageCollection.collect_garbage(options)
+     AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
     end
 
 The above example will clear sessions older than one day or that have been
@@ -241,5 +241,5 @@ locking strategy according to your needs:
 
 You can pass in your own error handler for raised exceptions or you can allow
 the default error handler to them for you. See the API documentation
-on the {AWS::DynamoDB::SessionStore::Errors::BaseHandler} class for more
+on the {AWS::SessionStore::DynamoDB::Errors::BaseHandler} class for more
 details.

@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::DynamoDB::SessionStore
+module AWS::SessionStore::DynamoDB
   class LockWaitTimeoutError < RuntimeError
     def initialize(msg = 'Maximum time spent to acquire lock has been exceeded!')
       super

@@ -12,10 +12,10 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::SessionStore::DynamoDB
-  class InvalidIDError < RuntimeError
-    def initialize(msg = "Corrupt Session ID!")
-      super
+module AWS
+  module SessionStore
+    module DynamoDB
+      VERSION = "0.5.0"
     end
   end
 end

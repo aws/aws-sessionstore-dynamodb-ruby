@@ -12,10 +12,10 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::DynamoDB::SessionStore
+module AWS::SessionStore::DynamoDB
   class Railtie < Rails::Railtie
     initializer 'aws-sessionstore-dynamodb-rack-middleware' do
-      ActionDispatch::Session::DynamoDbStore = AWS::DynamoDB::SessionStore::RackMiddleware
+      ActionDispatch::Session::DynamoDbStore = AWS::SessionStore::DynamoDB::RackMiddleware
     end
 
     # Load all rake tasks

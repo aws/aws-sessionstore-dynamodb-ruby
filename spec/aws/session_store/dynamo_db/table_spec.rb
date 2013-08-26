@@ -16,8 +16,8 @@ require 'stringio'
 require 'logger'
 
 module AWS
-  class DynamoDB
-    module SessionStore
+  module SessionStore
+    module DynamoDB
       describe Table do
         context "Mock Table Methods Tests", :integration => true do
           let(:table_name) { "sessionstore-integration-test-#{Time.now.to_i}" }

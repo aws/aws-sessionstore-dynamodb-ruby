@@ -15,7 +15,7 @@ namespace "db" do
   namespace "sessions" do
     desc 'Clean up Amazon DynamoDB session table'
     task :cleanup => :environment do |t|
-      AWS::DynamoDB::SessionStore::GarbageCollection.collect_garbage
+      AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage
     end
   end
 end

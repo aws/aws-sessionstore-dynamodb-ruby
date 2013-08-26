@@ -13,7 +13,7 @@
 
 require 'aws-sdk'
 
-module AWS::DynamoDB::SessionStore
+module AWS::SessionStore::DynamoDB
   # Collects and deletes unwanted sessions based on
   # their creation and update dates.
   module GarbageCollection
@@ -34,7 +34,7 @@ module AWS::DynamoDB::SessionStore
     # @option (see Configuration#initialize)
     # @api private
     def load_config(options = {})
-      AWS::DynamoDB::SessionStore::Configuration.new(options)
+      AWS::SessionStore::DynamoDB::Configuration.new(options)
     end
 
     # Sets scan filter attributes based on attributes specified.

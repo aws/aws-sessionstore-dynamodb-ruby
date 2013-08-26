@@ -14,7 +14,7 @@
 require 'yaml'
 require 'aws-sdk'
 
-module AWS::DynamoDB::SessionStore
+module AWS::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
   # by pulling configuration options from Runtime, a YAML file, the ENV and
   # default settings.
@@ -210,7 +210,7 @@ module AWS::DynamoDB::SessionStore
 
     # @return [Hash] Default Error Handler
     def gen_error_handler
-      default_handler = AWS::DynamoDB::SessionStore::Errors::DefaultHandler
+      default_handler = AWS::SessionStore::DynamoDB::Errors::DefaultHandler
       error_handler = @options[:error_handler] ||
                             default_handler.new(@options[:raise_errors])
       {:error_handler => error_handler}

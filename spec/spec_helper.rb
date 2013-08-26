@@ -45,17 +45,17 @@ ConstantHelpers = lambda do
   let(:client_error) { AWS::DynamoDB::Errors::UnrecognizedClientException }
   let(:invalid_cookie) { {"HTTP_COOKIE" => "rack.session=ApplePieBlueberries"} }
   let(:invalid_session_data) { {"rack.session"=>{"multiplier" => 1}} }
-  let(:rack_default_error_msg) { "Warning! AWS::DynamoDB::SessionStore failed to save session. Content dropped.\n" }
-  let(:missing_key_error) { AWS::DynamoDB::SessionStore::MissingSecretKeyError }
+  let(:rack_default_error_msg) { "Warning! AWS::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
+  let(:missing_key_error) { AWS::SessionStore::DynamoDB::MissingSecretKeyError }
 end
 
 RSpec.configure do |c|
   c.before(:each, :integration => true) do
     opts = {:table_name => 'sessionstore-integration-test'}
 
-    defaults = AWS::DynamoDB::SessionStore::Configuration::DEFAULTS
+    defaults = AWS::SessionStore::DynamoDB::Configuration::DEFAULTS
     defaults = defaults.merge(opts)
-    stub_const("AWS::DynamoDB::SessionStore::Configuration::DEFAULTS", defaults)
-    AWS::DynamoDB::SessionStore::Table.create_table(opts)
+    stub_const("AWS::SessionStore::DynamoDB::Configuration::DEFAULTS", defaults)
+    AWS::SessionStore::DynamoDB::Table.create_table(opts)
   end
 end

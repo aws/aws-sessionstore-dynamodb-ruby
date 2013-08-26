@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::DynamoDB::SessionStore::Locking
+module AWS::SessionStore::DynamoDB::Locking
   # This class provides a framework for implementing
   # locking strategies.
   class Base

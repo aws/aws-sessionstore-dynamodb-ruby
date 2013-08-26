@@ -14,8 +14,8 @@
 require 'spec_helper'
 
 module AWS
-  class DynamoDB
-    module SessionStore
+  module SessionStore
+    module DynamoDB
       describe RackMiddleware do
         include Rack::Test::Methods
 

@@ -13,7 +13,7 @@
 
 require "spec_helper"
 
-describe AWS::DynamoDB::SessionStore::Configuration do
+describe AWS::SessionStore::DynamoDB::Configuration do
 
   let(:defaults) do
     {
@@ -45,19 +45,19 @@ describe AWS::DynamoDB::SessionStore::Configuration do
   end
 
   def expected_options(opts)
-    cfg = AWS::DynamoDB::SessionStore::Configuration.new(opts)
+    cfg = AWS::SessionStore::DynamoDB::Configuration.new(opts)
     expected_opts = defaults.merge(expected_file_opts).merge(opts)
     cfg.to_hash.should include(expected_opts)
   end
 
   context "Configuration Tests" do
     it "configures option with out runtime,YAML or ENV options" do
-      cfg = AWS::DynamoDB::SessionStore::Configuration.new
+      cfg = AWS::SessionStore::DynamoDB::Configuration.new
       cfg.to_hash.should include(defaults)
     end
 
     it "configures accurate option hash with runtime options, no YAML or ENV" do
-      cfg = AWS::DynamoDB::SessionStore::Configuration.new(runtime_options)
+      cfg = AWS::SessionStore::DynamoDB::Configuration.new(runtime_options)
       expected_opts = defaults.merge(runtime_options)
       cfg.to_hash.should include(expected_opts)
     end
@@ -79,7 +79,7 @@ describe AWS::DynamoDB::SessionStore::Configuration do
     it "has rails defiend but no file specified, no error thrown" do
       rails = double('Rails', {:env => 'test', :root => ''})
       stub_const("Rails", rails)
-      cfg = AWS::DynamoDB::SessionStore::Configuration.new(runtime_options)
+      cfg = AWS::SessionStore::DynamoDB::Configuration.new(runtime_options)
       expected_opts = defaults.merge(runtime_options)
       cfg.to_hash.should include(expected_opts)
     end
@@ -87,7 +87,7 @@ describe AWS::DynamoDB::SessionStore::Configuration do
     it "has rails defiend but and default rails YAML file loads" do
       rails = double('Rails', {:env => 'test', :root => File.dirname(__FILE__)})
       stub_const("Rails", rails)
-      cfg = AWS::DynamoDB::SessionStore::Configuration.new(runtime_options)
+      cfg = AWS::SessionStore::DynamoDB::Configuration.new(runtime_options)
       expected_opts = defaults.merge(runtime_options)
       cfg.to_hash.should include(expected_opts)
     end
@@ -95,7 +95,7 @@ describe AWS::DynamoDB::SessionStore::Configuration do
     it "throws an exception when wrong path for file" do
       config_path = 'Wrong path!'
       runtime_opts = {:config_file => config_path}.merge(runtime_options)
-      expect{cfg = AWS::DynamoDB::SessionStore::Configuration.new(runtime_opts)}.to raise_error(Errno::ENOENT)
+      expect{cfg = AWS::SessionStore::DynamoDB::Configuration.new(runtime_opts)}.to raise_error(Errno::ENOENT)
     end
   end
 end
