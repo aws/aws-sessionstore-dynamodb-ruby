@@ -1,9 +1,9 @@
 Gem::Specification.new do |spec|
-  spec.name          = "aws-dynamodb-sessionstore"
+  spec.name          = "aws-sessionstore-dynamodb"
   spec.version       = "0.5.0"
   spec.authors       = ["Ruby Robinson"]
   spec.summary       = "The Amazon DynamoDB Session Store handles sessions for Ruby web applications using a DynamoDB backend."
-  spec.homepage      = "http://github.com/aws/aws-dynamodb-sessionstore-ruby"
+  spec.homepage      = "http://github.com/aws/aws-sessionstore-dynamodb-ruby"
   spec.license       = "Apache License 2.0"
 
   spec.files         = `git ls-files`.split($/)

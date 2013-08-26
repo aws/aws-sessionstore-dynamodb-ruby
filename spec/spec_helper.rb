@@ -22,7 +22,7 @@ end
 $: << File.join(File.dirname(File.dirname(__FILE__)), "lib")
 
 require 'rspec'
-require 'aws-dynamodb-sessionstore'
+require 'aws-sessionstore-dynamodb'
 require 'rack/test'
 
 # Default Rack application

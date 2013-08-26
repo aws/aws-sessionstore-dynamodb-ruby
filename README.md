@@ -11,7 +11,7 @@ Rack based frameworks.
 Install the session store gem by placing the following command into your
 Gemfile:
 
-    gem 'aws-dynamodb-sessionstore'
+    gem 'aws-sessionstore-dynamodb'
 
 You will need to have an existing Amazon DynamoDB session table in order for the
 application to work. You can generate a migration file for the session table
@@ -35,13 +35,13 @@ You can now start your Rails application with session support.
 For non-Rails applications, you can create the Amazon DynamoDB table in a
 Ruby file using the following method:
 
-    require 'aws-dynamodb-sessionstore'
+    require 'aws-sessionstore-dynamodb'
 
     AWS::DynamoDB::SessionStore::Table.create_table
 
 Run the session store as a Rack middleware in the following way:
 
-    require 'aws-dynamodb-sessionstore'
+    require 'aws-sessionstore-dynamodb'
     require 'some_rack_app'
 
     options = { :secret_key => 'SECRET_KEY' }
@@ -198,7 +198,7 @@ those values you can clear the old sessions with:
 
 You can create your own Rake task for garbage collection similar to below:
 
-    require "aws-dynamodb-sessionstore"
+    require "aws-sessionstore-dynamodb"
 
     desc 'Perform Garbage Collection'
     task :garbage_collect do |t|

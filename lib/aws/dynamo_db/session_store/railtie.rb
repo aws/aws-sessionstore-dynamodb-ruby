@@ -14,7 +14,7 @@
 
 module AWS::DynamoDB::SessionStore
   class Railtie < Rails::Railtie
-    initializer 'aws-dynamodb-sessionstore-rack-middleware' do
+    initializer 'aws-sessionstore-dynamodb-rack-middleware' do
       ActionDispatch::Session::DynamoDbStore = AWS::DynamoDB::SessionStore::RackMiddleware
     end
 
