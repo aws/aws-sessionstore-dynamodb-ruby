@@ -17,7 +17,7 @@ You will need to have an existing Amazon DynamoDB session table in order for the
 application to work. You can generate a migration file for the session table
 with the following command:
 
-    rails generate dynamo_db_session_handler
+    rails generate sessionstore:dynamodb
 
 To create the table, run migrations as normal with:
 
