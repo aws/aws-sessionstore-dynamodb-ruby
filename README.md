@@ -66,95 +66,17 @@ discouraging sensitive data storage. It also forces strict data size
 limitations. DynamoDB takes care of these concerns by allowing for a safe and
 scalable storage container with a much larger data size limit for session data.
 
+Full API documentation of the library can be found on [RubyDoc.info][1].
+
 ### Configuration Options
 
-The following options are available to be set in
+A number of options are available to be set in
 `AWS::SessionStore::DynamoDB::Configuration`, which is used by the
 `RackMiddleware` class. These options can be set in the YAML configuration
 file in a Rails application, directly by Ruby code, or environment variables.
 
-<table>
-<tbody>
-<tr class="odd">
-<th align="left"><p>Option Name</p></td>
-<th align="left"><p>Description</p></td>
-</tr>
-<tr class="even">
-<td><p>:table_name</p></td>
-<td><p>The session table name.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:table_key</p></td>
-<td><p>The session table hash key name.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:secret_key</p></td>
-<td><p>The secret key for HMAC encryption.</p></td>
-</tr>
-<tr class="even">
-<td><p>:consistent_read</p></td>
-<td><p>True/false depending on whether a strongly consistent read
-    is desired.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:read_capacity</p></td>
-<td><p>The maximum number of reads consumed per second before
-    DynamoDB returns a ThrottlingException.</p></td>
-</tr>
-<tr class="even">
-<td><p>:write_capacity</p></td>
-<td><p>The maximum number of writes consumed per second before
-    DynamoDB returns a ThrottlingException.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:raise_errors</p></td>
-<td><p>True/false depending on whether all errors should be raised
-    up the Rack stack. See documentation for details.</p></td>
-</tr>
-<tr class="even">
-<td><p>:dynamo_db_client</p></td>
-<td><p>The DynamoDB client used to perform DynamoDB calls.</p></td>
-</tr>
-<tr class="even">
-<td><p>:max_age</p></td>
-<td><p>Maximum age in seconds from the current time of
-    a session.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:max_stale</p></td>
-<td><p>Maximum time in seconds from the current time in which a
-    session was last updated.</p></td>
-</tr>
-<tr class="even">
-<td><p>:error_handler</p></td>
-<td><p>Error handling object for raised errors.</p></td>
-</tr>
-<tr class="even">
-<td><p>:enable_locking</p></td>
-<td><p>True/false depending on whether a locking strategy should
-    be implemented for session accesses.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:lock_expiry_time</p></td>
-<td><p>The time in milleseconds after which the lock
-    will expire.</p></td>
-</tr>
-<tr class="even">
-<td><p>:lock_retry_delay</p></td>
-<td><p>The time in milleseconds to wait before
-    retrying to obtain a lock.</p></td>
-</tr>
-<tr class="odd">
-<td><p>:lock_max_wait_time</p></td>
-<td><p>Maximum time in seconds a request will wait to obtain
-    the lock before throwing an exception.</p></td>
-</tr>
-<tr class="even">
-<td><p>:config_file</p></td>
-<td><p>File path to YAML configuration file</p></td>
-</tr>
-</tbody>
-</table>
+The full set of options along with defaults can be found in the
+[Configuration class documentation][2].
 
 #### Environment Options
 
@@ -171,12 +93,12 @@ The example below would be a valid way to set the session table name:
 
 The generator command specified in the installation section will generate two
 files: a migration file, `db/migration/VERSION_migration_name.rb`, and a
-configuration YAML file, `config/dynamo_db_session.yml`.
+configuration YAML file, `config/sessionstore/dynamodb.yml`.
 
 You can run the command with an argument that will define the name of the
 migration file. Once the YAML file is created, you can uncomment any of the
 lines to set configuration options to your liking. The session store will pull
-options from `config/dynamo_db_session.yml` by default if the file exists.
+options from `config/sessionstore/dynamodb.yml` by default if the file exists.
 If you do not wish to place the configuration YAML file in that location,
 you can also pass in a different file path to pull options from.
 
@@ -188,7 +110,7 @@ following examples show how to clear old sessions from your table.
 #### Rails
 
 A Rake task for garbage collection is provided for Rails applications.
-By default sessions do not expire. See `config/dynamo_db_session.yml` to
+By default sessions do not expire. See `config/sessionstore/dynamodb.yml` to
 configure the max age or stale period of a session. Once you have configured
 those values you can clear the old sessions with:
 
@@ -243,3 +165,6 @@ You can pass in your own error handler for raised exceptions or you can allow
 the default error handler to them for you. See the API documentation
 on the {AWS::SessionStore::DynamoDB::Errors::BaseHandler} class for more
 details.
+
+[1]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/frames
+[2]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/AWS/SessionStore/DynamoDB/Configuration#initialize-instance_method
