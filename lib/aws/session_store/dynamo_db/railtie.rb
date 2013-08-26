@@ -20,8 +20,8 @@ module AWS::SessionStore::DynamoDB
 
     # Load all rake tasks
     rake_tasks do
-    	Dir[File.expand_path("tasks/*.rake", __FILE__)].each do |rake_task|
-    		load rake_task
+      Dir[File.expand_path("../tasks/*.rake", __FILE__)].each do |rake_task|
+        load rake_task
       end
     end
   end
