@@ -268,7 +268,7 @@ module AWS::SessionStore::DynamoDB
 
     # @return [String] Rails configuraton path to YAML file default.
     def rails_config_file_path
-      File.join(Rails.root, "config", "dynamo_db_session.yml")
+      File.join(Rails.root, "config", "sessionstore/dynamodb.yml")
     end
 
     # Set accessible attributes after merged options.
