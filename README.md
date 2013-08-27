@@ -73,7 +73,8 @@ Full API documentation of the library can be found on [RubyDoc.info][1].
 A number of options are available to be set in
 `AWS::SessionStore::DynamoDB::Configuration`, which is used by the
 `RackMiddleware` class. These options can be set in the YAML configuration
-file in a Rails application, directly by Ruby code, or environment variables.
+file in a Rails application (located in `config/sessionstore/dynamodb.yml`),
+directly by Ruby code, or through environment variables.
 
 The full set of options along with defaults can be found in the
 [Configuration class documentation][2].
