@@ -1,8 +1,8 @@
 # Amazon DynamoDB Session Store
 
 The **Amazon DynamoDB Session Store** handles sessions for Ruby web applications
-using a DynamoDB backend. The session store is compatible with Rails and other
-Rack based frameworks.
+using a DynamoDB backend. The session store is compatible with Rails (3.x or 4.x)
+and other Rack based frameworks.
 
 ## Installation
 
