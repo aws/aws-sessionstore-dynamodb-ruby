@@ -74,7 +74,7 @@ module Aws
             last_request.session.to_hash.should eq("multiplier" => 2)
           end
 
-          it "does not rewrite Cookie if cookie previously/accuarately set" do
+          it "does not rewrite Cookie if cookie previously/accurately set" do
             get "/"
             last_response['Set-Cookie'].should_not be_nil
 
