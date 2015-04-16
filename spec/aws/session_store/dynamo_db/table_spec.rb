@@ -15,7 +15,7 @@ require 'spec_helper'
 require 'stringio'
 require 'logger'
 
-module AWS
+module Aws
   module SessionStore
     module DynamoDB
       describe Table do

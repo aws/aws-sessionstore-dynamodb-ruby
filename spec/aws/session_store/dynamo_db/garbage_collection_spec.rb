@@ -13,11 +13,11 @@
 
 require 'spec_helper'
 
-describe AWS::SessionStore::DynamoDB::GarbageCollection do
+describe Aws::SessionStore::DynamoDB::GarbageCollection do
   def member(min,max)
     member = []
     for i in min..max
-      member << {"session_id"=>{:s=>"#{i}"}}
+      member << {"session_id"=>"#{i}"}
     end
     member
   end
@@ -25,7 +25,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
   def format_scan_result
     member = []
     for i in 31..49
-      member << {"session_id"=>{:s=>"#{i}"}}
+      member << {"session_id"=>"#{i}"}
     end
 
     member.inject([]) do |rqst_array, item|
@@ -36,7 +36,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
 
   def collect_garbage
     options = { :dynamo_db_client => dynamo_db_client, :max_age => 100, :max_stale => 100 }
-    AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
+    Aws::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
   end
 
   let(:scan_resp1){
@@ -51,7 +51,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
   let(:scan_resp2){
     {
       :member => member(0, 31),
-      :last_evaluated_key => {"session_id"=>{:s=>"31"}}
+      :last_evaluated_key => {"session_id"=>"31"}
     }
   }
 
@@ -75,20 +75,14 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
           {
             :delete_request => {
               :key => {
-                "session_id" =>
-                {
-                  :s => "1"
-                }
+                "session_id" => "1"
               }
             }
           },
           {
             :delete_request => {
               :key => {
-                "session_id" =>
-                {
-                  :s => "17"
-                }
+                "session_id" => "17"
               }
             }
           }
@@ -97,7 +91,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
     }
   }
 
-  let(:dynamo_db_client) {AWS::DynamoDB::Client.new}
+  let(:dynamo_db_client) {Aws::DynamoDB::Client.new}
 
   context "Mock DynamoDB client with garbage collection" do
 
@@ -130,20 +124,14 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
             {
               :delete_request => {
                 :key => {
-                  "session_id" =>
-                  {
-                    :s => "1"
-                  }
+                  "session_id" => "1"
                 }
               }
             },
             {
               :delete_request => {
                 :key => {
-                  "session_id" =>
-                  {
-                    :s => "17"
-                  }
+                  "session_id" => "17"
                 }
               }
             }

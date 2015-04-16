@@ -37,7 +37,7 @@ Ruby file using the following method:
 
     require 'aws-sessionstore-dynamodb'
 
-    AWS::SessionStore::DynamoDB::Table.create_table
+    Aws::SessionStore::DynamoDB::Table.create_table
 
 Run the session store as a Rack middleware in the following way:
 
@@ -46,7 +46,7 @@ Run the session store as a Rack middleware in the following way:
 
     options = { :secret_key => 'SECRET_KEY' }
 
-    use AWS::SessionStore::DynamoDB::RackMiddleware.new(options)
+    use Aws::SessionStore::DynamoDB::RackMiddleware.new(options)
     run SomeRackApp
 
 Note that `:secret_key` is a mandatory configuration option that must be set.
@@ -71,7 +71,7 @@ Full API documentation of the library can be found on [RubyDoc.info][1].
 ### Configuration Options
 
 A number of options are available to be set in
-`AWS::SessionStore::DynamoDB::Configuration`, which is used by the
+`Aws::SessionStore::DynamoDB::Configuration`, which is used by the
 `RackMiddleware` class. These options can be set in the YAML configuration
 file in a Rails application (located in `config/sessionstore/dynamodb.yml`),
 directly by Ruby code, or through environment variables.
@@ -126,7 +126,7 @@ You can create your own Rake task for garbage collection similar to below:
     desc 'Perform Garbage Collection'
     task :garbage_collect do |t|
      options = {:max_age => 3600*24, max_stale => 5*3600 }
-     AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
+     Aws::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
     end
 
 The above example will clear sessions older than one day or that have been
@@ -164,8 +164,8 @@ locking strategy according to your needs:
 
 You can pass in your own error handler for raised exceptions or you can allow
 the default error handler to them for you. See the API documentation
-on the {AWS::SessionStore::DynamoDB::Errors::BaseHandler} class for more
+on the {Aws::SessionStore::DynamoDB::Errors::BaseHandler} class for more
 details.
 
 [1]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/frames
-[2]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/AWS/SessionStore/DynamoDB/Configuration#initialize-instance_method
+[2]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/Aws/SessionStore/DynamoDB/Configuration#initialize-instance_method

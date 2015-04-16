@@ -14,7 +14,7 @@
 require 'yaml'
 require 'aws-sdk'
 
-module AWS::SessionStore::DynamoDB
+module Aws::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
   # by pulling configuration options from Runtime, a YAML file, the ENV and
   # default settings.
@@ -66,8 +66,7 @@ module AWS::SessionStore::DynamoDB
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
       :lock_max_wait_time => 1,
-      :secret_key => nil,
-      :api_version => '2012-08-10'
+      :secret_key => nil
     }
 
     # @return [String] Session table name.
@@ -78,17 +77,17 @@ module AWS::SessionStore::DynamoDB
 
     # @return [true] If a strongly consistent read is used
     # @return [false] If an eventually consistent read is used.
-    # See AWS DynamoDB documentation for table consistent_read for more
+    # See Aws DynamoDB documentation for table consistent_read for more
     # information on this setting.
     attr_reader :consistent_read
 
     # @return [Integer] Maximum number of reads consumed per second before
-    #   DynamoDB returns a ThrottlingException. See AWS DynamoDB documentation
+    #   DynamoDB returns a ThrottlingException. See Aws DynamoDB documentation
     #   for table read_capacity for more information on this setting.
     attr_reader :read_capacity
 
     # @return [Integer] Maximum number of writes consumed per second before
-    #   DynamoDB returns a ThrottlingException. See AWS DynamoDB documentation
+    #   DynamoDB returns a ThrottlingException. See Aws DynamoDB documentation
     #   for table write_capacity for more information on this setting.
     attr_reader :write_capacity
 
@@ -102,7 +101,7 @@ module AWS::SessionStore::DynamoDB
     attr_reader :dynamo_db_client
 
     # @return [Error Handler] An error handling object that handles all exceptions
-    #   thrown during execution of the AWS DynamoDB Session Store Rack Middleware.
+    #   thrown during execution of the Aws DynamoDB Session Store Rack Middleware.
     #   For more information see the Handling Errors Section.
     attr_reader :error_handler
 
@@ -147,21 +146,21 @@ module AWS::SessionStore::DynamoDB
     #   used.
     # @option options [Integer] :read_capacity (10) The maximum number of
     #   strongly consistent reads consumed per second before
-    #   DynamoDB raises a ThrottlingException. See AWS DynamoDB documentation
+    #   DynamoDB raises a ThrottlingException. See Aws DynamoDB documentation
     #   for table read_capacity for more information on this setting.
     # @option options [Integer] :write_capacity (5) The maximum number of writes
     #   consumed per second before DynamoDB returns a ThrottlingException.
-    #   See AWS DynamoDB documentation for table write_capacity for more
+    #   See Aws DynamoDB documentation for table write_capacity for more
     #   information on this setting.
     # @option options [DynamoDB Client] :dynamo_db_client
-    #   (AWS::DynamoDB::ClientV2) DynamoDB client used to perform database
+    #   (Aws::DynamoDB::ClientV2) DynamoDB client used to perform database
     #   operations inside of middleware application.
     # @option options [Boolean] :raise_errors (false) If true, all errors are
     #   raised up the stack when default ErrorHandler. If false, Only specified
     #   errors are raised up the stack when default ErrorHandler is used.
     # @option options [Error Handler] :error_handler (DefaultErrorHandler)
     #   An error handling object that handles all exceptions thrown during
-    #   execution of the AWS DynamoDB Session Store Rack Middleware.
+    #   execution of the Aws DynamoDB Session Store Rack Middleware.
     #   For more information see the Handling Errors Section.
     # @option options [Integer] :max_age (nil) Maximum number of seconds earlier
     #   from the current time that a session was created.
@@ -203,14 +202,14 @@ module AWS::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client = AWS::DynamoDB::Client
+      client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
     end
 
     # @return [Hash] Default Error Handler
     def gen_error_handler
-      default_handler = AWS::SessionStore::DynamoDB::Errors::DefaultHandler
+      default_handler = Aws::SessionStore::DynamoDB::Errors::DefaultHandler
       error_handler = @options[:error_handler] ||
                             default_handler.new(@options[:raise_errors])
       {:error_handler => error_handler}
@@ -288,7 +287,7 @@ module AWS::SessionStore::DynamoDB
 
     # @return [Hash] Client subset options hash.
     def client_subset(options = {})
-      client_keys = [:aws_secret_key, :aws_region, :aws_access_key, :api_version]
+      client_keys = [:aws_secret_key, :aws_region, :aws_access_key]
       options.inject({}) do |opts, (opt_name, opt_value)|
         opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
         opts

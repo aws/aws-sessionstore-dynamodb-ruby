@@ -17,19 +17,19 @@ secret_key: <%= require 'securerandom'; SecureRandom.hex(64) %>
 
 # [Boolean] Define as true or false depending on if you want a strongly
 # consistent read.
-# See AWS DynamoDB documentation for table consistent_read for more
+# See Aws DynamoDB documentation for table consistent_read for more
 # information on this setting.
 #
 # consistent_read: true
 
 # [Integer] Maximum number of reads consumed per second before
-# DynamoDB returns a ThrottlingException. See AWS DynamoDB documentation
+# DynamoDB returns a ThrottlingException. See Aws DynamoDB documentation
 # or table read_capacity for more information on this setting.
 #
 # read_capacity: 10
 
 # [Integer] Maximum number of writes consumed per second before
-# DynamoDB returns a ThrottlingException. See AWS DynamoDB documentation
+# DynamoDB returns a ThrottlingException. See Aws DynamoDB documentation
 # or table write_capacity for more information on this setting.
 #
 # write_capacity: 5

@@ -13,7 +13,7 @@
 
 require 'spec_helper'
 
-module AWS
+module Aws
   module SessionStore
     module DynamoDB
       describe RackMiddleware do
@@ -46,15 +46,11 @@ module AWS
         end
 
         let(:dynamo_db_client) do
-          client = double('AWS::DynamoDB::Client')
-          client.stub(:delete_item) { 'Deleted' }
-          client.stub(:list_tables) { {:table_names => ['Sessions']} }
-          client.stub(:get_item) do
-            { :item => { 'data' => { :s => sample_packed_data } } }
-          end
-          client.stub(:update_item) do
-            { :attributes => { :created_at => 'now' } }
-          end
+          client = Aws::DynamoDB::Client.new(stub_responses: true)
+          client.stub_responses(:delete_item, true)
+          client.stub_responses(:list_tables, {:table_names => ['Sessions']})
+          client.stub_responses(:get_item, Struct.new(:item).new({'data' => sample_packed_data}))
+          client.stub_responses(:update_item, {:attributes => {'created_at' => {:s => 'now'}}})
           client
         end
 
@@ -67,7 +63,7 @@ module AWS
           it "creates a new HTTP cookie when Cookie not supplied" do
             get "/"
             last_response.body.should eq('All good!')
-            last_response['Set-Cookie'].should be_true
+            last_response['Set-Cookie'].should be_truthy
           end
 
           it "loads/manipulates a session based on id from HTTP-Cookie" do

@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe AWS::SessionStore::DynamoDB do
+describe Aws::SessionStore::DynamoDB do
   include Rack::Test::Methods
 
   instance_exec(&ConstantHelpers)
@@ -24,39 +24,39 @@ describe AWS::SessionStore::DynamoDB do
   end
 
   let(:base_app) { MultiplierApplication.new }
-  let(:app) { AWS::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
-  let(:client) { double('AWS::DynamoDB::Client') }
+  let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
+  let(:client) { Aws::DynamoDB::Client.new(stub_responses: true) }
 
   context "Error handling for Rack Middleware with default error handler" do
     it "raises error for missing secret key" do
-      client.stub(:update_item).and_raise(missing_key_error)
+      client.stub_responses(:update_item, missing_key_error)
       lambda { get "/" }.should raise_error(missing_key_error)
     end
 
     it "catches exception for inaccurate table name and raises error " do
-      client.stub(:update_item).and_raise(resource_error)
+      client.stub_responses(:update_item, resource_error)
       lambda { get "/" }.should raise_error(resource_error)
     end
 
     it "catches exception for inaccurate table key" do
-      client.stub(:update_item).and_raise(key_error)
-      client.stub(:get_item).and_raise(key_error)
+      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException)
+      client.stub_responses(:get_item, Aws::DynamoDB::Errors::ValidationException)
       get "/"
-      last_request.env["rack.errors"].string.should include(key_error_msg)
+      last_request.env["rack.errors"].string.should include('stubbed error')
     end
   end
 
   context "Test ExceptionHandler with true as return value for handle_error" do
     it "raises all errors" do
       @options[:raise_errors] = true
-      client.stub(:update_item).and_raise(client_error)
+      client.stub_responses(:update_item, client_error)
       lambda { get "/" }.should raise_error(client_error)
     end
 
     it "catches exception for inaccurate table key and raises error" do
       @options[:raise_errors] = true
-      client.stub(:update_item).and_raise(key_error)
-      lambda { get "/" }.should raise_error(key_error)
+      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException)
+      lambda { get "/" }.should raise_error(Aws::DynamoDB::Errors::ValidationException)
     end
   end
 end

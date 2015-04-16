@@ -12,10 +12,10 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS
+module Aws
   module SessionStore
     module DynamoDB
-      VERSION = "0.5.0"
+      VERSION = "0.6.0"
     end
   end
 end

@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::SessionStore::DynamoDB
+module Aws::SessionStore::DynamoDB
   class MissingSecretKeyError < RuntimeError
     def initialize(msg = "No secret key provided!")
       super
