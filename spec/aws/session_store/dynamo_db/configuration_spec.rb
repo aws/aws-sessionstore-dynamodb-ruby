@@ -29,11 +29,11 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   let(:expected_file_opts) do
     {
       :consistent_read => true,
-      :AWS_ACCESS_KEY_ID => 'FakeKey',
-      :AWS_REGION => 'New York',
+      :access_key_id => 'FakeKey',
+      :region => 'us-west-1',
       :table_name => 'NewTable',
       :table_key => 'Somekey',
-      :AWS_SECRET_ACCESS_KEY => 'Secret'
+      :secret_access_key => 'Secret'
     }
   end
 

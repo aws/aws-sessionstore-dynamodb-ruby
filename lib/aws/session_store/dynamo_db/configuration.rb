@@ -201,9 +201,13 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
-      client_opts = client_subset(@options)
-      client = Aws::DynamoDB::Client
-      dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
+      dynamo_db_client = @options[:dynamo_db_client]
+      if dynamo_db_client.nil?
+        client_opts = client_subset(@options)
+        client_opts[:endpoint] ||= ENV['AWS_ENDPOINT'] # for DynamoDB Local
+        dynamo_db_client = Aws::DynamoDB::Client.new(client_opts)
+      end
+
       {:dynamo_db_client => dynamo_db_client}
     end
 
@@ -285,11 +289,17 @@ module Aws::SessionStore::DynamoDB
       end
     end
 
+    CLIENT_KEYS = [
+        :access_key_id, :secret_access_key, :credentials, :region, :endpoint,
+        :http_continue_timeout, :http_idle_timeout, :http_open_timeout, :http_read_timeout,
+        :ssl_ca_bundle, :ssl_ca_directory, :ssl_ca_store, :ssl_verify_peer,
+        :retry_limit, :log_level, :logger, :profile, :stub_responses
+    ]
+
     # @return [Hash] Client subset options hash.
     def client_subset(options = {})
-      client_keys = [:aws_secret_key, :aws_region, :aws_access_key]
       options.inject({}) do |opts, (opt_name, opt_value)|
-        opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
+        opts[opt_name.to_sym] = opt_value if CLIENT_KEYS.include?(opt_name.to_sym)
         opts
       end
     end
