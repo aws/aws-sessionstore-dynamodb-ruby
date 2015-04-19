@@ -37,7 +37,9 @@ Ruby file using the following method:
 
     require 'aws-sessionstore-dynamodb'
 
-    Aws::SessionStore::DynamoDB::Table.create_table
+    options = { :secret_key => 'SECRET_KEY' }
+
+    Aws::SessionStore::DynamoDB::Table.create_table(options)
 
 Run the session store as a Rack middleware in the following way:
 
@@ -46,7 +48,7 @@ Run the session store as a Rack middleware in the following way:
 
     options = { :secret_key => 'SECRET_KEY' }
 
-    use Aws::SessionStore::DynamoDB::RackMiddleware.new(options)
+    use Aws::SessionStore::DynamoDB::RackMiddleware, options
     run SomeRackApp
 
 Note that `:secret_key` is a mandatory configuration option that must be set.
