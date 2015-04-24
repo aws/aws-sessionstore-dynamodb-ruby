@@ -28,7 +28,7 @@ module Aws::SessionStore::DynamoDB
         )
       config.dynamo_db_client.create_table(ddb_options)
       logger << "Table #{config.table_name} created, waiting for activation...\n"
-      # block_until_created(config)
+      block_until_created(config) unless options[:no_create_table_block]
       logger << "Table #{config.table_name} is now ready to use.\n"
     rescue Aws::DynamoDB::Errors::ResourceInUseException
       logger << "Table #{config.table_name} already exists, skipping creation.\n"
