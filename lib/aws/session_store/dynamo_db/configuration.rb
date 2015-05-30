@@ -204,8 +204,6 @@ module Aws::SessionStore::DynamoDB
       dynamo_db_client = @options[:dynamo_db_client]
       if dynamo_db_client.nil?
         client_opts = client_subset(@options)
-        # Support ENV to set endpoint to DynamoDB Local
-        client_opts[:endpoint] ||= ENV['AWS_DYNAMODB_ENDPOINT'] if ENV['AWS_DYNAMODB_ENDPOINT']
         dynamo_db_client = Aws::DynamoDB::Client.new(client_opts)
       end
 
