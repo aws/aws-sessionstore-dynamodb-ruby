@@ -50,8 +50,8 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def eliminate_unwanted_sessions(config, last_key = nil)
       scan_result = scan(config, last_key)
-      batch_delete(config, scan_result[:member])
-      scan_result[:last_evaluated_key] || {}
+      batch_delete(config, scan_result.items)
+      scan_result.last_evaluated_key || {}
     end
 
     # Scans the table for sessions matching the max age and
@@ -68,6 +68,7 @@ module Aws::SessionStore::DynamoDB
     def batch_delete(config, items)
       begin
         subset = items.shift(25)
+        puts "DELETE SESSIONS #{subset.map{|i| i['id']}}" if config.verbose && !subset.empty?
         sub_batch = write(subset)
         process!(config, sub_batch)
       end until subset.empty?

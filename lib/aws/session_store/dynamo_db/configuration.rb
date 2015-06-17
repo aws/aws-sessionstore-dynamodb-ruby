@@ -66,7 +66,8 @@ module Aws::SessionStore::DynamoDB
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
       :lock_max_wait_time => 1,
-      :secret_key => nil
+      :secret_key => nil,
+      :verbose => false
     }
 
     # @return [String] Session table name.
@@ -133,6 +134,9 @@ module Aws::SessionStore::DynamoDB
     #   before giving up.
     attr_reader :lock_max_wait_time
 
+    # @return [true] Info printed to stdout
+    # @return [false] Run silent, run deep
+    attr_reader :verbose
 
     # Provides configuration object that allows access to options defined
     # during Runtime, in a YAML file, in the ENV and by default.
@@ -180,6 +184,7 @@ module Aws::SessionStore::DynamoDB
     #   to wait to acquire lock before giving up.
     # @option options [String] :secret_key (SecureRandom.hex(64))
     #   Secret key for HMAC encription.
+    # @option options [Boolean] :verbose (true)
     def initialize(options = {})
       @options = default_options.merge(
       env_options.merge(
