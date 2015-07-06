@@ -41,25 +41,28 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
 
   let(:scan_resp1){
     resp = {
-      :member => member(0, 49),
+      :items => member(0, 49),
       :count => 50,
       :scanned_count => 1000,
       :last_evaluated_key => {}
     }
+    Struct.new(*resp.keys).new(*resp.values)
   }
 
   let(:scan_resp2){
-    {
-      :member => member(0, 31),
+    resp = {
+      :items => member(0, 31),
       :last_evaluated_key => {"session_id"=>"31"}
     }
+    Struct.new(*resp.keys).new(*resp.values)
   }
 
   let(:scan_resp3){
-    {
-      :member => member(31,49),
+    resp = {
+      :items => member(31,49),
       :last_evaluated_key => {}
     }
+    Struct.new(*resp.keys).new(*resp.values)
   }
 
   let(:write_resp1){
