@@ -34,12 +34,12 @@ describe Aws::SessionStore::DynamoDB do
     end
 
     it "catches exception for inaccurate table name and raises error " do
-      client.stub_responses(:update_item, resource_error)
+      client.stub_responses(:update_item, resource_error.new(nil,nil))
       lambda { get "/" }.should raise_error(resource_error)
     end
 
     it "catches exception for inaccurate table key" do
-      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException)
+      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException.new(nil,'stubbed error'))
       client.stub_responses(:get_item, Aws::DynamoDB::Errors::ValidationException)
       get "/"
       last_request.env["rack.errors"].string.should include('stubbed error')
@@ -49,13 +49,13 @@ describe Aws::SessionStore::DynamoDB do
   context "Test ExceptionHandler with true as return value for handle_error" do
     it "raises all errors" do
       @options[:raise_errors] = true
-      client.stub_responses(:update_item, client_error)
+      client.stub_responses(:update_item, client_error.new(nil,nil))
       lambda { get "/" }.should raise_error(client_error)
     end
 
     it "catches exception for inaccurate table key and raises error" do
       @options[:raise_errors] = true
-      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException)
+      client.stub_responses(:update_item, Aws::DynamoDB::Errors::ValidationException.new(nil,nil))
       lambda { get "/" }.should raise_error(Aws::DynamoDB::Errors::ValidationException)
     end
   end
