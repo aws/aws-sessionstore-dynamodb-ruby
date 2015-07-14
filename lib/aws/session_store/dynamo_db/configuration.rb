@@ -56,6 +56,7 @@ module Aws::SessionStore::DynamoDB
     DEFAULTS = {
       :table_name => "sessions",
       :table_key => "session_id",
+      :user_key => nil,
       :consistent_read => true,
       :read_capacity => 10,
       :write_capacity => 5,
@@ -75,6 +76,9 @@ module Aws::SessionStore::DynamoDB
 
     # @return [String] Session table hash key name.
     attr_reader :table_key
+
+    # @return [String] Name of user key in session data.
+    attr_reader :user_key
 
     # @return [true] If a strongly consistent read is used
     # @return [false] If an eventually consistent read is used.
@@ -145,6 +149,7 @@ module Aws::SessionStore::DynamoDB
     #   table.
     # @option options [String] :table_key ("id") The hash key of the sesison
     #   table.
+    # @option options [String] :user_key ("id") Name of user key in session.
     # @option options [Boolean] :consistent_read (true) If true, a strongly
     #   consistent read is used. If false, an eventually consistent read is
     #   used.

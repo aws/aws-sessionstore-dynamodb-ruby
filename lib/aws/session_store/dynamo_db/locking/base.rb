@@ -25,9 +25,8 @@ module Aws::SessionStore::DynamoDB::Locking
     # Updates session in database
     def set_session_data(env, sid, session, options = {})
       return false if session.empty?
-      packed_session = pack_data(session)
       handle_error(env) do
-        save_opts = update_opts(env, sid, packed_session, options)
+        save_opts = update_opts(env, sid, session, options)
         result = @config.dynamo_db_client.update_item(save_opts)
         sid
       end
@@ -107,9 +106,10 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Attributes to update via client.
     def attr_updts(env, session, add_attrs = {})
-      data = data_unchanged?(env, session) ? {} : data_attr(session)
+      packed_session = pack_data(session)
+      data = data_unchanged?(env, packed_session) ? {} : data_attr(packed_session)
       {
-        :attribute_updates => merge_all(updated_attr, data, add_attrs),
+        :attribute_updates => merge_all(updated_attr, data, add_attrs, user_attr(session)),
         :return_values => "UPDATED_NEW"
       }
     end
@@ -133,6 +133,15 @@ module Aws::SessionStore::DynamoDB::Locking
 
     def data_attr(session)
        { "data" => {:value => session, :action  => "PUT"} }
+    end
+
+    def user_attr(session)
+      key = @config.user_key
+      if key.nil? || !session.key?(key)
+        { }
+      else
+        { key => {:value => session[key], :action  => "PUT"} }
+      end
     end
 
     # Determine if data has been manipulated

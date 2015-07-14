@@ -23,9 +23,12 @@ module Aws::SessionStore::DynamoDB
     # @option (see Configuration#initialize)
     def create_table(options = {})
       config = load_config(options)
-      ddb_options = properties(config.table_name, config.table_key).merge(
+      ddb_options = properties(config.table_name, config.table_key, config.user_key).merge(
           throughput(config.read_capacity, config.write_capacity)
         )
+      unless config.user_key.nil?
+        ddb_options.merge!(user_key_index(config.user_key))
+      end
       config.dynamo_db_client.create_table(ddb_options)
       logger << "Table #{config.table_name} created, waiting for activation...\n"
       block_until_created(config) unless options[:no_create_table_block]
@@ -55,8 +58,11 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] Attribute settings for creating a session table.
     # @api private
-    def attributes(hash_key)
+    def attributes(hash_key, user_key)
       attributes = [{:attribute_name => hash_key, :attribute_type => 'S'}]
+      unless user_key.nil?
+        attributes << {:attribute_name => user_key, :attribute_type => 'S'}
+      end
       { :attribute_definitions => attributes }
     end
 
@@ -76,10 +82,21 @@ module Aws::SessionStore::DynamoDB
       { :provisioned_throughput => units }
     end
 
+    def user_key_index(user_key)
+      {
+        :global_secondary_indexes=> [{
+             :index_name=> "#{user_key}_index",
+             :key_schema=>[{:attribute_name => user_key, :key_type => "HASH"}],
+             :projection=> {:projection_type=>"KEYS_ONLY"},
+             :provisioned_throughput=>{:read_capacity_units=>1, :write_capacity_units=>1}
+           }]
+      }
+    end
+
     # @return Properties for Session table
     # @api private
-    def properties(table_name, hash_key)
-      attributes(hash_key).merge(schema(table_name, hash_key))
+    def properties(table_name, hash_key, user_key)
+      attributes(hash_key, user_key).merge(schema(table_name, hash_key))
     end
 
     # @api private

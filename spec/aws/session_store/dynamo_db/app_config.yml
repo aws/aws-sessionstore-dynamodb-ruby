@@ -13,6 +13,7 @@
 
   table_name: NewTable
   table_key: Somekey
+  user_key: UserId
   consistent_read: true
   access_key_id: FakeKey
   secret_access_key: Secret
