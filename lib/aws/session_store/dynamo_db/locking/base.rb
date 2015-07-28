@@ -93,6 +93,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Unmarshal the data.
     def unpack_data(packed_data)
+      return {} if packed_data.nil?
       Marshal.load(packed_data.unpack("m*").first)
     end
 
