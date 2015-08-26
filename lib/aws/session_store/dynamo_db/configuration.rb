@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 require 'yaml'
-require 'aws-sdk'
+require 'aws-sdk-v1'
 
 module AWS::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
