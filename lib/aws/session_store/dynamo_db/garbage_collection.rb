@@ -59,7 +59,7 @@ module AWS::SessionStore::DynamoDB
     # @api private
     def scan(config, last_item = nil)
       options = scan_opts(config)
-      options.merge(start_key(last_item)) if last_item
+      options = options.merge(start_key(last_item)) if last_item
       config.dynamo_db_client.scan(options)
     end
 
