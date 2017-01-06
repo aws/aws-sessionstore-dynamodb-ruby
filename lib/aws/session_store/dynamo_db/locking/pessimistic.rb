@@ -11,7 +11,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 module AWS::SessionStore::DynamoDB::Locking
   # This class implements a pessimistic locking strategy for the
   # DynamoDB session handler. Sessions obtain an exclusive lock
@@ -43,7 +42,7 @@ module AWS::SessionStore::DynamoDB::Locking
         exceeded_wait_time?(max_attempt_date)
         begin
           result = attempt_set_lock(sid)
-        rescue AWS::DynamoDB::Errors::ConditionalCheckFailedException
+        rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException
           expires_at ||= get_expire_date(sid)
           next if expires_at.nil?
           result = bust_lock(sid, expires_at)
@@ -70,15 +69,15 @@ module AWS::SessionStore::DynamoDB::Locking
     # @return [Time] Time stamp for which the session was locked.
     def lock_time(sid)
       result = @config.dynamo_db_client.get_item(get_lock_time_opts(sid))
-      (result[:item]["locked_at"][:n]).to_f if result[:item]["locked_at"]
+      (result[:item]['locked_at'][:N]).to_f if result[:item]['locked_at']
     end
 
     # @return [String] Session data.
     def get_data(env, result)
-      lock_time = result[:attributes]["locked_at"][:n]
-      env["locked_at"] = (lock_time).to_f
-      env['rack.initial_data'] = result[:item]["data"][:s] if result[:item]
-      unpack_data(result[:attributes]["data"][:s])
+      lock_time = result[:attributes]['locked_at'][:N]
+      env['locked_at'] = lock_time.to_f
+      env['rack.initial_data'] = result[:item]['data'][:S] if result[:item]
+      unpack_data(result[:attributes]['data'][:S])
     end
 
     # Attempt to bust the lock if the expiration date has expired.
@@ -112,20 +111,21 @@ module AWS::SessionStore::DynamoDB::Locking
     # Lock attribute - time stamp of when session was locked.
     def lock_attr
       {
-        :attribute_updates => {"locked_at" => updated_at},
-        :return_values => "ALL_NEW"
+        attribute_updates: { 'locked_at' => updated_at },
+        return_values: 'ALL_NEW'
       }
     end
 
     # Time in which session was updated.
     def updated_at
-      { :value => {:n => "#{(Time.now).to_f}"}, :action  => "PUT" }
+      { value: { N: Time.now.to_f.to_s }, action: 'PUT' }
     end
 
     # Attributes for locking.
     def add_lock_attrs(env)
       {
-        :add_attrs => add_attr, :expect_attr => expect_lock_time(env)
+        add_attrs: add_attr,
+        expect_attr: expect_lock_time(env)
       }
     end
 
@@ -136,25 +136,32 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Lock expectation.
     def lock_expect
-      { :expected => { "locked_at" => { :exists => false } } }
+      { expected: { 'locked_at' => { exists: false } } }
     end
 
     # Option to delete lock.
     def add_attr
-      { "locked_at" => {:action => "DELETE"} }
+      { 'locked_at' => { action: 'DELETE' } }
     end
 
     # Expectation of when lock was set.
     def expect_lock_time(env)
-      { :expected => {"locked_at" => {
-        :value => {:n => "#{env["locked_at"]}"}, :exists => true}} }
+      {
+        expected: {
+          'locked_at' => {
+            value: { N: env['locked_at'].to_s },
+            exists: true
+          }
+        }
+      }
     end
 
     # Attributes to be retrieved via client
     def lock_opts
-      {:attributes_to_get => ["locked_at"],
-      :consistent_read => @config.consistent_read}
+      {
+        attributes_to_get: ['locked_at'],
+        consistent_read: @config.consistent_read
+      }
     end
-
   end
 end

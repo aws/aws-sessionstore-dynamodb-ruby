@@ -11,12 +11,10 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 module AWS::SessionStore::DynamoDB::Locking
   # This class provides a framework for implementing
   # locking strategies.
   class Base
-
     # Creates configuration object.
     def initialize(cfg)
       @config = cfg
@@ -28,18 +26,18 @@ module AWS::SessionStore::DynamoDB::Locking
       packed_session = pack_data(session)
       handle_error(env) do
         save_opts = update_opts(env, sid, packed_session, options)
-        result = @config.dynamo_db_client.update_item(save_opts)
+        _result = @config.dynamo_db_client.update_item(save_opts)
         sid
       end
     end
 
     # Packs session data.
     def pack_data(data)
-      [Marshal.dump(data)].pack("m*")
+      [Marshal.dump(data)].pack('m*')
     end
 
     # Gets session data.
-    def get_session_data(env, sid)
+    def get_session_data(_env, _sid)
       raise NotImplementedError
     end
 
@@ -53,12 +51,10 @@ module AWS::SessionStore::DynamoDB::Locking
     # Each database operation is placed in this rescue wrapper.
     # This wrapper will call the method, rescue any exceptions and then pass
     # exceptions to the configured error handler.
-    def handle_error(env = nil, &block)
-      begin
-        yield
-      rescue AWS::DynamoDB::Errors::Base => e
-        @config.error_handler.handle_error(e, env)
-      end
+    def handle_error(env = nil, &_block)
+      yield
+    rescue Aws::DynamoDB::Errors::Base => e
+      @config.error_handler.handle_error(e, env)
     end
 
     private
@@ -94,14 +90,14 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Unmarshal the data.
     def unpack_data(packed_data)
-      Marshal.load(packed_data.unpack("m*").first)
+      Marshal.load(packed_data.unpack('m*').first)
     end
 
     # Table options for client.
     def table_opts(sid)
       {
-        :table_name => @config.table_name,
-        :key => {@config.table_key => {:s => sid}}
+        table_name: @config.table_name,
+        key: { @config.table_key => { S: sid } }
       }
     end
 
@@ -109,30 +105,30 @@ module AWS::SessionStore::DynamoDB::Locking
     def attr_updts(env, session, add_attrs = {})
       data = data_unchanged?(env, session) ? {} : data_attr(session)
       {
-        :attribute_updates => merge_all(updated_attr, data, add_attrs),
-        :return_values => "UPDATED_NEW"
+        attribute_updates: merge_all(updated_attr, data, add_attrs),
+        return_values: 'UPDATED_NEW'
       }
     end
 
     # Update client with current time attribute.
     def updated_at
-      { :value => {:n => "#{(Time.now).to_f}"}, :action  => "PUT" }
+      { value: { N: Time.now.to_f.to_s }, action: 'PUT' }
     end
 
     # Attribute for creation of session.
     def created_attr
-      { "created_at" => updated_at }
+      { 'created_at' => updated_at }
     end
 
     # Attribute for updating session.
     def updated_attr
       {
-        "updated_at" => updated_at
+        'updated_at' => updated_at
       }
     end
 
     def data_attr(session)
-       { "data" => {:value => {:s => session}, :action  => "PUT"} }
+      { 'data' => { value: { S: session }, action: 'PUT' } }
     end
 
     # Determine if data has been manipulated
@@ -143,19 +139,21 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Expected attributes
     def expected_attributes(sid)
-      { :expected => {@config.table_key => {:value => {:s => sid}, :exists => true}} }
+      { expected: { @config.table_key => { value: { S: sid }, exists: true } } }
     end
 
     # Attributes to be retrieved via client
     def attr_opts
-      {:attributes_to_get => ["data"],
-      :consistent_read => @config.consistent_read}
+      {
+        attributes_to_get: ['data'],
+        consistent_read: @config.consistent_read
+      }
     end
 
     # @return [Hash] merged hash of all hashes passed in.
     def merge_all(*hashes)
       new_hash = {}
-      hashes.each{|hash| new_hash.merge!(hash)}
+      hashes.each { |hash| new_hash.merge!(hash) }
       new_hash
     end
   end

@@ -13,18 +13,17 @@
 
 require 'rack/session/abstract/id'
 require 'openssl'
-require 'aws-sdk-v1'
+require 'aws-sdk'
 
 module AWS::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
   # that uses a DynamoDB backend for session storage.
   class RackMiddleware < Rack::Session::Abstract::ID
-
     # Initializes SessionStore middleware.
     #
     # @param app Rack application.
     # @option (see Configuration#initialize)
-    # @raise [AWS::DynamoDB::Errors::ResourceNotFoundException] If valid table
+    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If valid table
     #   name is not provided.
     # @raise [AWS::SessionStore::DynamoDB::MissingSecretKey] If secret key is
     #   not provided.
@@ -41,17 +40,17 @@ module AWS::SessionStore::DynamoDB
     # @return [Locking::Null] If locking is not enabled.
     # @return [Locking::Pessimistic] If locking is enabled.
     def set_locking_strategy
-      if @config.enable_locking
-        @lock = AWS::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
-      else
-        @lock = AWS::SessionStore::DynamoDB::Locking::Null.new(@config)
-      end
+      @lock = if @config.enable_locking
+                AWS::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
+              else
+                AWS::SessionStore::DynamoDB::Locking::Null.new(@config)
+              end
     end
 
     # Determines if the correct session table name is being used for
     # this application. Also tests existence of secret key.
     #
-    # @raise [AWS::DynamoDB::Errors::ResourceNotFoundException] If wrong table
+    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If wrong table
     #   name.
     def validate_config
       raise MissingSecretKeyError unless @config.secret_key
@@ -64,7 +63,7 @@ module AWS::SessionStore::DynamoDB
       when nil
         set_new_session_properties(env)
       when false
-        handle_error {raise InvalidIDError}
+        handle_error { raise InvalidIDError }
         set_new_session_properties(env)
       else
         data = @lock.get_session_data(env, sid)
@@ -96,24 +95,22 @@ module AWS::SessionStore::DynamoDB
     # Each database operation is placed in this rescue wrapper.
     # This wrapper will call the method, rescue any exceptions and then pass
     # exceptions to the configured session handler.
-    def handle_error(env = nil, &block)
-      begin
-        yield
-      rescue AWS::DynamoDB::Errors::Base,
-             AWS::SessionStore::DynamoDB::InvalidIDError => e
-        @config.error_handler.handle_error(e, env)
-      end
+    def handle_error(env = nil, &_block)
+      yield
+    rescue Aws::DynamoDB::Errors::Base,
+           AWS::SessionStore::DynamoDB::InvalidIDError => e
+      @config.error_handler.handle_error(e, env)
     end
 
     # Generate HMAC hash based on MD5
     def generate_hmac(sid, secret)
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest::MD5.new, secret, sid).strip()
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest::MD5.new, secret, sid).strip
     end
 
     # Generate sid with HMAC hash
     def generate_sid(secure = @sid_secure)
       sid = super(secure)
-      sid = "#{generate_hmac(sid, @config.secret_key)}--" + sid
+      "#{generate_hmac(sid, @config.secret_key)}--" + sid
     end
 
     # Verify digest of HMACed hash
@@ -122,7 +119,7 @@ module AWS::SessionStore::DynamoDB
     # @return [false] If the HMAC id has been corrupted.
     def verify_hmac(sid)
       return unless sid
-      digest, ver_sid  = sid.split("--")
+      digest, ver_sid = sid.split('--')
       return false unless ver_sid
       digest == generate_hmac(ver_sid, @config.secret_key)
     end

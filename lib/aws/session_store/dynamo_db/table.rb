@@ -11,7 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-require 'aws-sdk-v1'
+require 'aws-sdk'
 require 'logger'
 
 module AWS::SessionStore::DynamoDB
@@ -24,13 +24,13 @@ module AWS::SessionStore::DynamoDB
     def create_table(options = {})
       config = load_config(options)
       ddb_options = properties(config.table_name, config.table_key).merge(
-          throughput(config.read_capacity, config.write_capacity)
-        )
+        throughput(config.read_capacity, config.write_capacity)
+      )
       config.dynamo_db_client.create_table(ddb_options)
       logger << "Table #{config.table_name} created, waiting for activation...\n"
       block_until_created(config)
       logger << "Table #{config.table_name} is now ready to use.\n"
-    rescue AWS::DynamoDB::Errors::ResourceInUseException
+    rescue Aws::DynamoDB::Errors::ResourceInUseException
       logger << "Table #{config.table_name} already exists, skipping creation.\n"
     end
 
@@ -38,7 +38,7 @@ module AWS::SessionStore::DynamoDB
     # @option (see Configuration#initialize)
     def delete_table(options = {})
       config = load_config(options)
-      config.dynamo_db_client.delete_table(:table_name => config.table_name)
+      config.dynamo_db_client.delete_table(table_name: config.table_name)
     end
 
     # @api private
@@ -56,24 +56,24 @@ module AWS::SessionStore::DynamoDB
     # @return [Hash] Attribute settings for creating a session table.
     # @api private
     def attributes(hash_key)
-      attributes = [{:attribute_name => hash_key, :attribute_type => 'S'}]
-      { :attribute_definitions => attributes }
+      attributes = [{ attribute_name: hash_key, attribute_type: 'S' }]
+      { attribute_definitions: attributes }
     end
 
     # @return Shema values for session table
     # @api private
     def schema(table_name, hash_key)
       {
-        :table_name => table_name,
-        :key_schema => [ {:attribute_name => hash_key, :key_type => 'HASH'} ]
+        table_name: table_name,
+        key_schema: [{ attribute_name: hash_key, key_type: 'HASH' }]
       }
     end
 
     # @return Throughput for Session table
     # @api private
     def throughput(read, write)
-      units = {:read_capacity_units=> read, :write_capacity_units => write}
-      { :provisioned_throughput => units }
+      units = { read_capacity_units: read, write_capacity_units: write }
+      { provisioned_throughput: units }
     end
 
     # @return Properties for Session table
@@ -86,13 +86,12 @@ module AWS::SessionStore::DynamoDB
     def block_until_created(config)
       created = false
       until created
-        params = { :table_name => config.table_name }
+        params = { table_name: config.table_name }
         response = config.dynamo_db_client.describe_table(params)
         created = response[:table][:table_status] == 'ACTIVE'
 
         sleep 10
       end
     end
-
   end
 end

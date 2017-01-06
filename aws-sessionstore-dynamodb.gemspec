@@ -13,6 +13,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'aws-sdk-v1'
+  spec.add_dependency 'aws-sdk'
   spec.add_dependency 'rack', '~> 1.0'
 end

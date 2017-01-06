@@ -11,7 +11,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 module AWS::SessionStore::DynamoDB::Locking
   # This class gets and sets sessions
   # without a locking strategy.
@@ -32,9 +31,9 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # @return [String] Session data.
     def extract_data(env, result = nil)
-      env['rack.initial_data'] = result[:item]["data"][:s] if result[:item]
-      unpack_data(result[:item]["data"][:s]) if result[:item]
+      puts result
+      env['rack.initial_data'] = result[:item]['data'][:S] if result[:item]
+      unpack_data(result[:item]['data'][:S]) if result[:item]
     end
-
   end
 end

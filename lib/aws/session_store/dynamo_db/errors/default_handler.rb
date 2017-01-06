@@ -11,14 +11,13 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 module AWS::SessionStore::DynamoDB::Errors
   # This class handles errors raised from DynamoDB.
   class DefaultHandler < AWS::SessionStore::DynamoDB::Errors::BaseHandler
     # Array of errors that will always be passed up the Rack stack.
     HARD_ERRORS = [
-      AWS::DynamoDB::Errors::ResourceNotFoundException,
-      AWS::DynamoDB::Errors::ConditionalCheckFailedException,
+      Aws::DynamoDB::Errors::ResourceNotFoundException,
+      Aws::DynamoDB::Errors::ConditionalCheckFailedException,
       AWS::SessionStore::DynamoDB::MissingSecretKeyError,
       AWS::SessionStore::DynamoDB::LockWaitTimeoutError
     ]

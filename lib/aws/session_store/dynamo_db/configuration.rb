@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 require 'yaml'
-require 'aws-sdk-v1'
+require 'aws-sdk'
 
 module AWS::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
@@ -66,8 +66,8 @@ module AWS::SessionStore::DynamoDB
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
       :lock_max_wait_time => 1,
-      :secret_key => nil,
-      :api_version => '2012-08-10'
+      :secret_key => nil#,
+      # :api_version => '2012-08-10'
     }
 
     # @return [String] Session table name.
@@ -133,7 +133,6 @@ module AWS::SessionStore::DynamoDB
     # @return [Integer] Maximum time in seconds to wait to acquire lock
     #   before giving up.
     attr_reader :lock_max_wait_time
-
 
     # Provides configuration object that allows access to options defined
     # during Runtime, in a YAML file, in the ENV and by default.
@@ -203,7 +202,7 @@ module AWS::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client = AWS::DynamoDB::Client
+      client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
     end

@@ -97,7 +97,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
     }
   }
 
-  let(:dynamo_db_client) {AWS::DynamoDB::Client.new}
+  let(:dynamo_db_client) {Aws::DynamoDB::Client.new}
 
   context "Mock DynamoDB client with garbage collection" do
 
