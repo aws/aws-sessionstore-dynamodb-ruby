@@ -24,7 +24,7 @@ module AWS::SessionStore::DynamoDB
     #
     # @param app Rack application.
     # @option (see Configuration#initialize)
-    # @raise [AWS::DynamoDB::Errors::ResourceNotFoundException] If valid table
+    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If valid table
     #   name is not provided.
     # @raise [AWS::SessionStore::DynamoDB::MissingSecretKey] If secret key is
     #   not provided.
@@ -51,7 +51,7 @@ module AWS::SessionStore::DynamoDB
     # Determines if the correct session table name is being used for
     # this application. Also tests existence of secret key.
     #
-    # @raise [AWS::DynamoDB::Errors::ResourceNotFoundException] If wrong table
+    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If wrong table
     #   name.
     def validate_config
       raise MissingSecretKeyError unless @config.secret_key

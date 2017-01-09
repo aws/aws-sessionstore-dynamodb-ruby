@@ -39,10 +39,10 @@ end
 
 ConstantHelpers = lambda do
   let(:token_error_msg) { 'The security token included in the request is invalid' }
-  let(:resource_error) { Aws::DynamoDB::Errors::ResourceNotFoundException }
-  let(:key_error) { Aws::DynamoDB::Errors::ValidationException.new(key_error_msg) }
+  let(:resource_error) { Aws::DynamoDB::Errors::ResourceNotFoundException.new(double('Seahorse::Client::RequestContext'), 'Resource not found.') }
+  let(:key_error) { Aws::DynamoDB::Errors::ValidationException.new(double('Seahorse::Client::RequestContext'), key_error_msg) }
   let(:key_error_msg) { 'The provided key element does not match the schema' }
-  let(:client_error) { Aws::DynamoDB::Errors::UnrecognizedClientException }
+  let(:client_error) { Aws::DynamoDB::Errors::UnrecognizedClientException.new(double('Seahorse::Client::RequestContext'), 'Unrecognized Client.') }
   let(:invalid_cookie) { {"HTTP_COOKIE" => "rack.session=ApplePieBlueberries"} }
   let(:invalid_session_data) { {"rack.session"=>{"multiplier" => 1}} }
   let(:rack_default_error_msg) { "Warning! AWS::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
