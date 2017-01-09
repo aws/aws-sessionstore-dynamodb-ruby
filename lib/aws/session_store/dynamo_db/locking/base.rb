@@ -101,7 +101,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def table_opts(sid)
       {
         :table_name => @config.table_name,
-        :key => {@config.table_key => {:s => sid}}
+        :key => { @config.table_key => sid }
       }
     end
 
@@ -116,7 +116,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Update client with current time attribute.
     def updated_at
-      { :value => {:n => "#{(Time.now).to_f}"}, :action  => "PUT" }
+      { :value => "#{(Time.now).to_f}", :action  => "PUT" }
     end
 
     # Attribute for creation of session.
@@ -132,7 +132,7 @@ module AWS::SessionStore::DynamoDB::Locking
     end
 
     def data_attr(session)
-       { "data" => {:value => {:s => session}, :action  => "PUT"} }
+       { "data" => {:value => session, :action  => "PUT"} }
     end
 
     # Determine if data has been manipulated
