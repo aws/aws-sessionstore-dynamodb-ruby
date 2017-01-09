@@ -67,7 +67,7 @@ module AWS
           it "creates a new HTTP cookie when Cookie not supplied" do
             get "/"
             last_response.body.should eq('All good!')
-            last_response['Set-Cookie'].should be_true
+            last_response['Set-Cookie'].should be_truthy
           end
 
           it "loads/manipulates a session based on id from HTTP-Cookie" do
