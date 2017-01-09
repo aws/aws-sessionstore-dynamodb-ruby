@@ -56,7 +56,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def handle_error(env = nil, &block)
       begin
         yield
-      rescue AWS::DynamoDB::Errors::Base => e
+      rescue Aws::DynamoDB::Errors::Base => e
         @config.error_handler.handle_error(e, env)
       end
     end

@@ -13,7 +13,7 @@
 
 require 'rack/session/abstract/id'
 require 'openssl'
-require 'aws-sdk-v1'
+require 'aws-sdk'
 
 module AWS::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
@@ -99,7 +99,7 @@ module AWS::SessionStore::DynamoDB
     def handle_error(env = nil, &block)
       begin
         yield
-      rescue AWS::DynamoDB::Errors::Base,
+      rescue Aws::DynamoDB::Errors::Base,
              AWS::SessionStore::DynamoDB::InvalidIDError => e
         @config.error_handler.handle_error(e, env)
       end

@@ -43,7 +43,7 @@ module AWS::SessionStore::DynamoDB::Locking
         exceeded_wait_time?(max_attempt_date)
         begin
           result = attempt_set_lock(sid)
-        rescue AWS::DynamoDB::Errors::ConditionalCheckFailedException
+        rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException
           expires_at ||= get_expire_date(sid)
           next if expires_at.nil?
           result = bust_lock(sid, expires_at)
