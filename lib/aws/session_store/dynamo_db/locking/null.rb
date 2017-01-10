@@ -31,9 +31,10 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # @return [String] Session data.
     def extract_data(env, result = nil)
-      puts result
-      env['rack.initial_data'] = result[:item]['data'][:S] if result[:item]
-      unpack_data(result[:item]['data'][:S]) if result[:item]
+      if result[:item]
+        env['rack.initial_data'] = result[:item]['data']
+        unpack_data(result[:item]['data'])
+      end
     end
   end
 end

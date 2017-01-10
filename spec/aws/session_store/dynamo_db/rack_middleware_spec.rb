@@ -50,7 +50,7 @@ module AWS
           client.stub(:delete_item) { 'Deleted' }
           client.stub(:list_tables) { { table_names: ['Sessions'] } }
           client.stub(:get_item) do
-            { item: { 'data' => { S: sample_packed_data } } }
+            { item: { 'data' => sample_packed_data } }
           end
           client.stub(:update_item) do
             { attributes: { created_at: 'now' } }

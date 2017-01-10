@@ -97,7 +97,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def table_opts(sid)
       {
         table_name: @config.table_name,
-        key: { @config.table_key => { S: sid } }
+        key: { @config.table_key => sid }
       }
     end
 
@@ -112,7 +112,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Update client with current time attribute.
     def updated_at
-      { value: { N: Time.now.to_f.to_s }, action: 'PUT' }
+      { value: Time.now.to_f.to_s, action: 'PUT' }
     end
 
     # Attribute for creation of session.
@@ -128,7 +128,7 @@ module AWS::SessionStore::DynamoDB::Locking
     end
 
     def data_attr(session)
-      { 'data' => { value: { S: session }, action: 'PUT' } }
+      { 'data' => { value: session, action: 'PUT' } }
     end
 
     # Determine if data has been manipulated
@@ -139,7 +139,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Expected attributes
     def expected_attributes(sid)
-      { expected: { @config.table_key => { value: { S: sid }, exists: true } } }
+      { expected: { @config.table_key => { value: sid, exists: true } } }
     end
 
     # Attributes to be retrieved via client

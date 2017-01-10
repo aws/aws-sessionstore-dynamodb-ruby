@@ -69,15 +69,15 @@ module AWS::SessionStore::DynamoDB::Locking
     # @return [Time] Time stamp for which the session was locked.
     def lock_time(sid)
       result = @config.dynamo_db_client.get_item(get_lock_time_opts(sid))
-      (result[:item]['locked_at'][:N]).to_f if result[:item]['locked_at']
+      result[:item]['locked_at'].to_f if result[:item]['locked_at']
     end
 
     # @return [String] Session data.
     def get_data(env, result)
-      lock_time = result[:attributes]['locked_at'][:N]
+      lock_time = result[:attributes]['locked_at']
       env['locked_at'] = lock_time.to_f
-      env['rack.initial_data'] = result[:item]['data'][:S] if result[:item]
-      unpack_data(result[:attributes]['data'][:S])
+      env['rack.initial_data'] = result[:item]['data'] if result[:item]
+      unpack_data(result[:attributes]['data'])
     end
 
     # Attempt to bust the lock if the expiration date has expired.
@@ -118,7 +118,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Time in which session was updated.
     def updated_at
-      { value: { N: Time.now.to_f.to_s }, action: 'PUT' }
+      { value: Time.now.to_f.to_s, action: 'PUT' }
     end
 
     # Attributes for locking.
@@ -149,7 +149,7 @@ module AWS::SessionStore::DynamoDB::Locking
       {
         expected: {
           'locked_at' => {
-            value: { N: env['locked_at'].to_s },
+            value: env['locked_at'].to_s,
             exists: true
           }
         }
