@@ -49,7 +49,7 @@ module Aws::SessionStore::DynamoDB
     # Scans and deletes batch.
     # @api private
     def eliminate_unwanted_sessions(config, last_key = nil)
-      scan_result = scan(config, last_key)
+      scan_result = perform_scan(config, last_key)
       batch_delete(config, scan_result[:member])
       scan_result[:last_evaluated_key] || {}
     end
@@ -57,7 +57,7 @@ module Aws::SessionStore::DynamoDB
     # Scans the table for sessions matching the max age and
     # max stale time specified.
     # @api private
-    def scan(config, last_item = nil)
+    def perform_scan(config, last_item = nil)
       options = scan_opts(config)
       options = options.merge(start_key(last_item)) if last_item
       config.dynamo_db_client.scan(options)
