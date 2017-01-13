@@ -127,7 +127,7 @@ module AWS::SessionStore::DynamoDB::Locking
     # Update client with current time + max_stale.
     def expire_at
       max_stale = @config.max_stale || 0
-      { value: (Time.now.to_f + max_stale).to_s, action: 'PUT' }
+      { value: (Time.now + max_stale).to_i, action: 'PUT' }
     end
 
     # Attribute for TTL expiration of session.
