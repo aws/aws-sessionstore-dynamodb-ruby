@@ -35,7 +35,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Packs session data.
     def pack_data(data)
-      [Marshal.dump(data)].pack("m*")
+      [serialize_data(data)].pack("m*")
     end
 
     # Gets session data.
@@ -92,9 +92,19 @@ module Aws::SessionStore::DynamoDB::Locking
       merge_all(table_opts(sid), attribute_opts)
     end
 
-    # Unmarshal the data.
+    def deserialize_data(data)
+      return JSON::load(data) if @config.storage_format.downcase == "json"
+      Marshal.load(data)
+    end
+
+    def serialize_data(data)
+      return JSON.dump(data) if @config.storage_format.downcase == "json"
+      Marshal.dump(data)
+    end
+
+    # Decode the data.
     def unpack_data(packed_data)
-      Marshal.load(packed_data.unpack("m*").first)
+      deserialize_data(packed_data.unpack("m*").first)
     end
 
     # Table options for client.

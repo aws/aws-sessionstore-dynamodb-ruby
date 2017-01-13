@@ -19,6 +19,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     {
       :table_name => "sessions",
       :table_key => "session_id",
+      :storage_format => "marshal",
       :consistent_read => true,
       :read_capacity => 10,
       :write_capacity => 5,

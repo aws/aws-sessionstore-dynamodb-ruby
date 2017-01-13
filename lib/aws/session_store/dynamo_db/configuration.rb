@@ -56,6 +56,7 @@ module Aws::SessionStore::DynamoDB
     DEFAULTS = {
       :table_name => "sessions",
       :table_key => "session_id",
+      :storage_format => "marshal",
       :consistent_read => true,
       :read_capacity => 10,
       :write_capacity => 5,
@@ -74,6 +75,10 @@ module Aws::SessionStore::DynamoDB
 
     # @return [String] Session table hash key name.
     attr_reader :table_key
+
+    # @return [String] Format data is stored in before encoded and written to
+    #   the database.
+    attr_reader :storage_format
 
     # @return [true] If a strongly consistent read is used
     # @return [false] If an eventually consistent read is used.
@@ -141,6 +146,8 @@ module Aws::SessionStore::DynamoDB
     #   table.
     # @option options [String] :table_key ("id") The hash key of the sesison
     #   table.
+    # @option options [String] :storage_format ("marshal") Format data is stored
+    #   in before encoded and written to the database.
     # @option options [Boolean] :consistent_read (true) If true, a strongly
     #   consistent read is used. If false, an eventually consistent read is
     #   used.

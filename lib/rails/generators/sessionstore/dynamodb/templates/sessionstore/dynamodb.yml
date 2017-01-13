@@ -15,6 +15,11 @@ secret_key: <%= require 'securerandom'; SecureRandom.hex(64) %>
 #
 # table_key: session_id
 
+# [String] Format data is stored in before encoded and written to the
+# database. Supported options: marshal or json. 
+#
+# storage_format: marshal
+
 # [Boolean] Define as true or false depending on if you want a strongly
 # consistent read.
 # See AWS DynamoDB documentation for table consistent_read for more
