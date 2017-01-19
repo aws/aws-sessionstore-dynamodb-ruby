@@ -14,5 +14,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'aws-sdk'
-  spec.add_dependency 'rack', '~> 1.0'
+  spec.add_dependency 'rack', '~> 2.0'
 end
