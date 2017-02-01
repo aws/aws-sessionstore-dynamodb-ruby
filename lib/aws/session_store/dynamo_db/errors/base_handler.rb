@@ -33,7 +33,7 @@ module AWS::SessionStore::DynamoDB::Errors
     # error up the stack.
     # You may reraise the error passed.
     #
-    # @param [Aws::DynamoDB::Errors::Base] error error passed in from
+    # @param [Aws::DynamoDB::Errors::ServiceError] error error passed in from
     #  AWS::SessionStore::DynamoDB::RackMiddleware.
     # @param [Rack::Request::Environment,nil] env Rack environment
     # @return [false] If exception was handled and will not reraise exception.

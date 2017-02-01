@@ -99,7 +99,7 @@ module AWS::SessionStore::DynamoDB
     def handle_error(env = nil, &block)
       begin
         yield
-      rescue Aws::DynamoDB::Errors::Base,
+      rescue Aws::DynamoDB::Errors::ServiceError,
              AWS::SessionStore::DynamoDB::InvalidIDError => e
         @config.error_handler.handle_error(e, env)
       end
