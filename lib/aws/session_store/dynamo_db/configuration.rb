@@ -153,7 +153,7 @@ module AWS::SessionStore::DynamoDB
     #   See AWS DynamoDB documentation for table write_capacity for more
     #   information on this setting.
     # @option options [DynamoDB Client] :dynamo_db_client
-    #   (Aws::DynamoDB::ClientV2) DynamoDB client used to perform database
+    #   (Aws::DynamoDB::Client) DynamoDB client used to perform database
     #   operations inside of middleware application.
     # @option options [Boolean] :raise_errors (false) If true, all errors are
     #   raised up the stack when default ErrorHandler. If false, Only specified
