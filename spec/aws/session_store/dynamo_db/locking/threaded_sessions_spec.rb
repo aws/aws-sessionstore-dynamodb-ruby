@@ -71,7 +71,7 @@ describe AWS::SessionStore::DynamoDB::RackMiddleware do
       get "/"
       last_request.session[:multiplier].should eq(1)
 
-      t1 = thread_exception(AWS::DynamoDB::Errors::ConditionalCheckFailedException)
+      t1 = thread_exception(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
       t2 = thread(2, 0.25, true)
       t1.join
       t2.join

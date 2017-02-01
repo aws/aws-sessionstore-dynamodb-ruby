@@ -25,7 +25,7 @@ describe AWS::SessionStore::DynamoDB do
 
   let(:base_app) { MultiplierApplication.new }
   let(:app) { AWS::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
-  let(:client) { double('AWS::DynamoDB::Client') }
+  let(:client) { double('Aws::DynamoDB::Client') }
 
   context "Error handling for Rack Middleware with default error handler" do
     it "raises error for missing secret key" do
@@ -41,8 +41,8 @@ describe AWS::SessionStore::DynamoDB do
     it "catches exception for inaccurate table key" do
       client.stub(:update_item).and_raise(key_error)
       client.stub(:get_item).and_raise(key_error)
-      get "/"
-      last_request.env["rack.errors"].string.should include(key_error_msg)
+      get '/'
+      last_request.env['rack.errors'].string.should include(key_error_msg)
     end
   end
 

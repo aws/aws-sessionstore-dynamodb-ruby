@@ -46,11 +46,11 @@ module AWS
         end
 
         let(:dynamo_db_client) do
-          client = double('AWS::DynamoDB::Client')
+          client = double('Aws::DynamoDB::Client')
           client.stub(:delete_item) { 'Deleted' }
           client.stub(:list_tables) { {:table_names => ['Sessions']} }
           client.stub(:get_item) do
-            { :item => { 'data' => { :s => sample_packed_data } } }
+            { :item => { 'data' => sample_packed_data } }
           end
           client.stub(:update_item) do
             { :attributes => { :created_at => 'now' } }
@@ -67,7 +67,7 @@ module AWS
           it "creates a new HTTP cookie when Cookie not supplied" do
             get "/"
             last_response.body.should eq('All good!')
-            last_response['Set-Cookie'].should be_true
+            last_response['Set-Cookie'].should be_truthy
           end
 
           it "loads/manipulates a session based on id from HTTP-Cookie" do

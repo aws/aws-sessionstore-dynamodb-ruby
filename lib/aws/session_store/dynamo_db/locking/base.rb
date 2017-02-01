@@ -56,7 +56,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def handle_error(env = nil, &block)
       begin
         yield
-      rescue AWS::DynamoDB::Errors::Base => e
+      rescue Aws::DynamoDB::Errors::ServiceError => e
         @config.error_handler.handle_error(e, env)
       end
     end
@@ -101,7 +101,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def table_opts(sid)
       {
         :table_name => @config.table_name,
-        :key => {@config.table_key => {:s => sid}}
+        :key => { @config.table_key => sid }
       }
     end
 
@@ -116,7 +116,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Update client with current time attribute.
     def updated_at
-      { :value => {:n => "#{(Time.now).to_f}"}, :action  => "PUT" }
+      { :value => "#{(Time.now).to_f}", :action  => "PUT" }
     end
 
     # Attribute for creation of session.
@@ -132,7 +132,7 @@ module AWS::SessionStore::DynamoDB::Locking
     end
 
     def data_attr(session)
-       { "data" => {:value => {:s => session}, :action  => "PUT"} }
+       { "data" => {:value => session, :action  => "PUT"} }
     end
 
     # Determine if data has been manipulated
@@ -143,7 +143,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Expected attributes
     def expected_attributes(sid)
-      { :expected => {@config.table_key => {:value => {:s => sid}, :exists => true}} }
+      { :expected => {@config.table_key => {:value => sid, :exists => true}} }
     end
 
     # Attributes to be retrieved via client

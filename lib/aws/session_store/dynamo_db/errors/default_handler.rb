@@ -17,8 +17,8 @@ module AWS::SessionStore::DynamoDB::Errors
   class DefaultHandler < AWS::SessionStore::DynamoDB::Errors::BaseHandler
     # Array of errors that will always be passed up the Rack stack.
     HARD_ERRORS = [
-      AWS::DynamoDB::Errors::ResourceNotFoundException,
-      AWS::DynamoDB::Errors::ConditionalCheckFailedException,
+      Aws::DynamoDB::Errors::ResourceNotFoundException,
+      Aws::DynamoDB::Errors::ConditionalCheckFailedException,
       AWS::SessionStore::DynamoDB::MissingSecretKeyError,
       AWS::SessionStore::DynamoDB::LockWaitTimeoutError
     ]
