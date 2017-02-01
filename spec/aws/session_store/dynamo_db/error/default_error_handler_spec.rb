@@ -41,10 +41,8 @@ describe AWS::SessionStore::DynamoDB do
     it "catches exception for inaccurate table key" do
       client.stub(:update_item).and_raise(key_error)
       client.stub(:get_item).and_raise(key_error)
-      lambda do
-        get '/'
-        last_request.env['rack.errors'].string.should include(key_error_msg)
-      end.should raise_error(key_error)
+      get '/'
+      last_request.env['rack.errors'].string.should include(key_error_msg)
     end
   end
 
