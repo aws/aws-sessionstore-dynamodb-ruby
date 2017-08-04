@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS
+module Aws
   module SessionStore
     module DynamoDB; end
   end

@@ -39,23 +39,29 @@ end
 
 ConstantHelpers = lambda do
   let(:token_error_msg) { 'The security token included in the request is invalid' }
-  let(:resource_error) { AWS::DynamoDB::Errors::ResourceNotFoundException }
-  let(:key_error) { AWS::DynamoDB::Errors::ValidationException.new(key_error_msg) }
+  let(:resource_error) {
+    Aws::DynamoDB::Errors::ResourceNotFoundException.new(double('Seahorse::Client::RequestContext'), resource_error_msg)
+  }
+  let(:resource_error_msg) { 'The Resource is not found.' }
+  let(:key_error) { Aws::DynamoDB::Errors::ValidationException.new(double('Seahorse::Client::RequestContext'), key_error_msg) }
   let(:key_error_msg) { 'The provided key element does not match the schema' }
-  let(:client_error) { AWS::DynamoDB::Errors::UnrecognizedClientException }
+  let(:client_error) {
+    Aws::DynamoDB::Errors::UnrecognizedClientException.new(double('Seahorse::Client::RequestContext'), client_error_msg)
+  }
+  let(:client_error_msg) { 'Unrecognized Client.'}
   let(:invalid_cookie) { {"HTTP_COOKIE" => "rack.session=ApplePieBlueberries"} }
   let(:invalid_session_data) { {"rack.session"=>{"multiplier" => 1}} }
-  let(:rack_default_error_msg) { "Warning! AWS::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
-  let(:missing_key_error) { AWS::SessionStore::DynamoDB::MissingSecretKeyError }
+  let(:rack_default_error_msg) { "Warning! Aws::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
+  let(:missing_key_error) { Aws::SessionStore::DynamoDB::MissingSecretKeyError }
 end
 
 RSpec.configure do |c|
   c.before(:each, :integration => true) do
     opts = {:table_name => 'sessionstore-integration-test'}
 
-    defaults = AWS::SessionStore::DynamoDB::Configuration::DEFAULTS
+    defaults = Aws::SessionStore::DynamoDB::Configuration::DEFAULTS
     defaults = defaults.merge(opts)
-    stub_const("AWS::SessionStore::DynamoDB::Configuration::DEFAULTS", defaults)
-    AWS::SessionStore::DynamoDB::Table.create_table(opts)
+    stub_const("Aws::SessionStore::DynamoDB::Configuration::DEFAULTS", defaults)
+    Aws::SessionStore::DynamoDB::Table.create_table(opts)
   end
 end

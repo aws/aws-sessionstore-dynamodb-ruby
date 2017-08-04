@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe AWS::SessionStore::DynamoDB do
+describe Aws::SessionStore::DynamoDB do
   include Rack::Test::Methods
 
   instance_exec(&ConstantHelpers)
@@ -24,8 +24,8 @@ describe AWS::SessionStore::DynamoDB do
   end
 
   let(:base_app) { MultiplierApplication.new }
-  let(:app) { AWS::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
-  let(:client) { double('AWS::DynamoDB::Client') }
+  let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
+  let(:client) { double('Aws::DynamoDB::Client') }
 
   context "Error handling for Rack Middleware with default error handler" do
     it "raises error for missing secret key" do

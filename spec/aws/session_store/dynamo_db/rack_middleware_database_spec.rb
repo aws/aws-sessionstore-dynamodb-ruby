@@ -13,7 +13,7 @@
 
 require 'spec_helper'
 
-module AWS
+module Aws
   module SessionStore
     module DynamoDB
       describe RackMiddleware do
@@ -29,7 +29,7 @@ module AWS
         def table_opts(sid)
           {
             :table_name => Configuration::DEFAULTS[:table_name],
-            :key => { Configuration::DEFAULTS[:table_key] => { :s => sid } }
+            :key => { Configuration::DEFAULTS[:table_key] => sid }
           }
         end
 
@@ -43,7 +43,7 @@ module AWS
 
         def extract_time(sid)
           options = table_opts(sid).merge(attr_opts)
-          Time.at((client.get_item(options)[:item]["created_at"][:n]).to_f)
+          Time.at((client.get_item(options)[:item]["created_at"]).to_f)
         end
 
         let(:base_app) { MultiplierApplication.new }
@@ -60,7 +60,7 @@ module AWS
           it "creates a new HTTP cookie when Cookie not supplied" do
             get "/"
             last_response.body.should eq('All good!')
-            last_response['Set-Cookie'].should be_true
+            last_response['Set-Cookie'].should be_truthy
           end
 
           it "does not rewrite Cookie if cookie previously/accuarately set" do
