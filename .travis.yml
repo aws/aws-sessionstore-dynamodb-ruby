@@ -8,6 +8,9 @@ rvm:
 
 sudo: false
 
+env:
+  - AWS_REGION=foo
+
 script: bundle exec rake
 
 bundler_args: --without docs release repl
