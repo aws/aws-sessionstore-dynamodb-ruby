@@ -202,7 +202,7 @@ module Aws::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client_opts[:user_agent_suffix] = _user_agent(opts.delete(:user_agent_suffix))
+      client_opts[:user_agent_suffix] = _user_agent(@options.delete(:user_agent_suffix))
       client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
