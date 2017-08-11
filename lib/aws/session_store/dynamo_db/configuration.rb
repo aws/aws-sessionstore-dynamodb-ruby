@@ -12,9 +12,9 @@
 # language governing permissions and limitations under the License.
 
 require 'yaml'
-require 'aws-sdk-v1'
+require 'aws-sdk'
 
-module AWS::SessionStore::DynamoDB
+module Aws::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
   # by pulling configuration options from Runtime, a YAML file, the ENV and
   # default settings.
@@ -66,8 +66,7 @@ module AWS::SessionStore::DynamoDB
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
       :lock_max_wait_time => 1,
-      :secret_key => nil,
-      :api_version => '2012-08-10'
+      :secret_key => nil
     }
 
     # @return [String] Session table name.
@@ -154,7 +153,7 @@ module AWS::SessionStore::DynamoDB
     #   See AWS DynamoDB documentation for table write_capacity for more
     #   information on this setting.
     # @option options [DynamoDB Client] :dynamo_db_client
-    #   (AWS::DynamoDB::ClientV2) DynamoDB client used to perform database
+    #   (Aws::DynamoDB::Client) DynamoDB client used to perform database
     #   operations inside of middleware application.
     # @option options [Boolean] :raise_errors (false) If true, all errors are
     #   raised up the stack when default ErrorHandler. If false, Only specified
@@ -203,14 +202,15 @@ module AWS::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client = AWS::DynamoDB::Client
+      client_opts[:user_agent_suffix] = _user_agent(@options.delete(:user_agent_suffix))
+      client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
     end
 
     # @return [Hash] Default Error Handler
     def gen_error_handler
-      default_handler = AWS::SessionStore::DynamoDB::Errors::DefaultHandler
+      default_handler = Aws::SessionStore::DynamoDB::Errors::DefaultHandler
       error_handler = @options[:error_handler] ||
                             default_handler.new(@options[:raise_errors])
       {:error_handler => error_handler}
@@ -292,6 +292,14 @@ module AWS::SessionStore::DynamoDB
       options.inject({}) do |opts, (opt_name, opt_value)|
         opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
         opts
+      end
+    end
+
+    def _user_agent(custom)
+      if custom
+        custom
+      else
+        " aws-sessionstore/#{VERSION}"
       end
     end
   end
