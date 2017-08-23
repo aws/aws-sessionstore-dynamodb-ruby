@@ -143,7 +143,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Expected attributes
     def expected_attributes(sid)
-      { :expected => { @config.table_key => {:value => sid, :exists => true} } }
+      { :expected => {@config.table_key => {:value => sid, :exists => true}} }
     end
 
     # Attributes to be retrieved via client

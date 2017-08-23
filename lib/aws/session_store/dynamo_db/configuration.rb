@@ -202,7 +202,6 @@ module Aws::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client_opts[:user_agent_suffix] = _user_agent(@options.delete(:user_agent_suffix))
       client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
@@ -292,14 +291,6 @@ module Aws::SessionStore::DynamoDB
       options.inject({}) do |opts, (opt_name, opt_value)|
         opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
         opts
-      end
-    end
-
-    def _user_agent(custom)
-      if custom
-        custom
-      else
-        " aws-sessionstore/#{VERSION}"
       end
     end
   end
