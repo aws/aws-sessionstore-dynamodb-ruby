@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 require 'yaml'
-require 'aws-sdk-v1'
+require 'aws-sdk'
 
 module AWS::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
@@ -66,8 +66,7 @@ module AWS::SessionStore::DynamoDB
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
       :lock_max_wait_time => 1,
-      :secret_key => nil,
-      :api_version => '2012-08-10'
+      :secret_key => nil
     }
 
     # @return [String] Session table name.
@@ -154,7 +153,7 @@ module AWS::SessionStore::DynamoDB
     #   See AWS DynamoDB documentation for table write_capacity for more
     #   information on this setting.
     # @option options [DynamoDB Client] :dynamo_db_client
-    #   (AWS::DynamoDB::ClientV2) DynamoDB client used to perform database
+    #   (Aws::DynamoDB::Client) DynamoDB client used to perform database
     #   operations inside of middleware application.
     # @option options [Boolean] :raise_errors (false) If true, all errors are
     #   raised up the stack when default ErrorHandler. If false, Only specified
@@ -203,7 +202,7 @@ module AWS::SessionStore::DynamoDB
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
       client_opts = client_subset(@options)
-      client = AWS::DynamoDB::Client
+      client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
     end

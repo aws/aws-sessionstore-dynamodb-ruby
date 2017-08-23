@@ -12,7 +12,7 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::SessionStore::DynamoDB::Locking
+module Aws::SessionStore::DynamoDB::Locking
   # This class provides a framework for implementing
   # locking strategies.
   class Base
@@ -56,7 +56,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def handle_error(env = nil, &block)
       begin
         yield
-      rescue AWS::DynamoDB::Errors::Base => e
+      rescue Aws::DynamoDB::Errors::ServiceError => e
         @config.error_handler.handle_error(e, env)
       end
     end
@@ -65,7 +65,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # @return [Hash] Options for deleting session.
     def delete_opts(sid)
-      table_opts(sid)
+      merge_all(table_opts(sid), expected_attributes(sid))
     end
 
     # @return [Hash] Options for updating item in Session table.
@@ -101,7 +101,7 @@ module AWS::SessionStore::DynamoDB::Locking
     def table_opts(sid)
       {
         :table_name => @config.table_name,
-        :key => {@config.table_key => {:s => sid}}
+        :key => { @config.table_key => sid }
       }
     end
 
@@ -116,7 +116,7 @@ module AWS::SessionStore::DynamoDB::Locking
 
     # Update client with current time attribute.
     def updated_at
-      { :value => {:n => "#{(Time.now).to_f}"}, :action  => "PUT" }
+      { :value => "#{(Time.now).to_f}", :action  => "PUT" }
     end
 
     # Attribute for creation of session.
@@ -132,13 +132,18 @@ module AWS::SessionStore::DynamoDB::Locking
     end
 
     def data_attr(session)
-       { "data" => {:value => {:s => session}, :action  => "PUT"} }
+       { "data" => {:value => session, :action  => "PUT"} }
     end
 
     # Determine if data has been manipulated
     def data_unchanged?(env, session)
       return false unless env['rack.initial_data']
       env['rack.initial_data'] == session
+    end
+
+    # Expected attributes
+    def expected_attributes(sid)
+      { :expected => {@config.table_key => {:value => sid, :exists => true}} }
     end
 
     # Attributes to be retrieved via client
