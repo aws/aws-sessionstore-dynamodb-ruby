@@ -12,9 +12,9 @@
 # language governing permissions and limitations under the License.
 
 
-module AWS::SessionStore::DynamoDB::Errors
+module Aws::SessionStore::DynamoDB::Errors
   # BaseErrorHandler provides an interface for error handlers
-  # that can be passed in to {AWS::SessionStore::DynamoDB::RackMiddleware}.
+  # that can be passed in to {Aws::SessionStore::DynamoDB::RackMiddleware}.
   # Each error handler must implement a handle_error method.
   #
   # @example Sample ErrorHandler class
@@ -34,7 +34,7 @@ module AWS::SessionStore::DynamoDB::Errors
     # You may reraise the error passed.
     #
     # @param [Aws::DynamoDB::Errors::ServiceError] error error passed in from
-    #  AWS::SessionStore::DynamoDB::RackMiddleware.
+    #  Aws::SessionStore::DynamoDB::RackMiddleware.
     # @param [Rack::Request::Environment,nil] env Rack environment
     # @return [false] If exception was handled and will not reraise exception.
     # @raise [Aws::DynamoDB::Errors] If error has be reraised.

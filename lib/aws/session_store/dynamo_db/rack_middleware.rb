@@ -15,7 +15,7 @@ require 'rack/session/abstract/id'
 require 'openssl'
 require 'aws-sdk'
 
-module AWS::SessionStore::DynamoDB
+module Aws::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
   # that uses a DynamoDB backend for session storage.
   class RackMiddleware < Rack::Session::Abstract::ID
@@ -26,7 +26,7 @@ module AWS::SessionStore::DynamoDB
     # @option (see Configuration#initialize)
     # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If valid table
     #   name is not provided.
-    # @raise [AWS::SessionStore::DynamoDB::MissingSecretKey] If secret key is
+    # @raise [Aws::SessionStore::DynamoDB::MissingSecretKey] If secret key is
     #   not provided.
     def initialize(app, options = {})
       super
@@ -42,9 +42,9 @@ module AWS::SessionStore::DynamoDB
     # @return [Locking::Pessimistic] If locking is enabled.
     def set_locking_strategy
       if @config.enable_locking
-        @lock = AWS::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
+        @lock = Aws::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
       else
-        @lock = AWS::SessionStore::DynamoDB::Locking::Null.new(@config)
+        @lock = Aws::SessionStore::DynamoDB::Locking::Null.new(@config)
       end
     end
 
@@ -100,7 +100,7 @@ module AWS::SessionStore::DynamoDB
       begin
         yield
       rescue Aws::DynamoDB::Errors::ServiceError,
-             AWS::SessionStore::DynamoDB::InvalidIDError => e
+             Aws::SessionStore::DynamoDB::InvalidIDError => e
         @config.error_handler.handle_error(e, env)
       end
     end
