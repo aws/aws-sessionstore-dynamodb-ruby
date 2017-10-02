@@ -13,7 +13,7 @@
 
 require 'spec_helper'
 
-describe AWS::SessionStore::DynamoDB::GarbageCollection do
+describe Aws::SessionStore::DynamoDB::GarbageCollection do
   def member(min,max)
     member = []
     for i in min..max
@@ -36,7 +36,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
 
   def collect_garbage
     options = { :dynamo_db_client => dynamo_db_client, :max_age => 100, :max_stale => 100 }
-    AWS::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
+    Aws::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
   end
 
   let(:scan_resp1){
@@ -97,7 +97,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
     }
   }
 
-  let(:dynamo_db_client) {AWS::DynamoDB::Client.new}
+  let(:dynamo_db_client) {Aws::DynamoDB::Client.new}
 
   context "Mock DynamoDB client with garbage collection" do
 
@@ -113,7 +113,7 @@ describe AWS::SessionStore::DynamoDB::GarbageCollection do
       dynamo_db_client.should_receive(:scan).
         exactly(1).times.and_return(scan_resp2)
       dynamo_db_client.should_receive(:scan).
-        exactly(1).times.with(hash_including({:exclusive_start_key => scan_resp2.last_evaluated_key})).
+        exactly(1).times.with(hash_including(exclusive_start_key: scan_resp2[:last_evaluated_key])).
         and_return(scan_resp3)
       dynamo_db_client.should_receive(:batch_write_item).
         exactly(3).times.and_return(write_resp1)

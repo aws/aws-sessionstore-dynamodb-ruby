@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe AWS::SessionStore::DynamoDB::RackMiddleware do
+describe Aws::SessionStore::DynamoDB::RackMiddleware do
   include Rack::Test::Methods
 
   def thread(mul_val, time, check)
@@ -39,11 +39,11 @@ describe AWS::SessionStore::DynamoDB::RackMiddleware do
   end
 
   let(:base_app) { MultiplierApplication.new }
-  let(:app) { AWS::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
+  let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
 
   context "Mock Multiple Threaded Sessions", :integration => true do
     before do
-      @options = AWS::SessionStore::DynamoDB::Configuration.new.to_hash
+      @options = Aws::SessionStore::DynamoDB::Configuration.new.to_hash
       @options[:enable_locking] = true
       @options[:secret_key] = 'watermelon_smiles'
 
@@ -71,7 +71,7 @@ describe AWS::SessionStore::DynamoDB::RackMiddleware do
       get "/"
       last_request.session[:multiplier].should eq(1)
 
-      t1 = thread_exception(AWS::DynamoDB::Errors::ConditionalCheckFailedException)
+      t1 = thread_exception(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
       t2 = thread(2, 0.25, true)
       t1.join
       t2.join
@@ -87,7 +87,7 @@ describe AWS::SessionStore::DynamoDB::RackMiddleware do
 
       t1 = thread(2, 0, false)
       sleep(0.25)
-      t2 = thread_exception(AWS::SessionStore::DynamoDB::LockWaitTimeoutError)
+      t2 = thread_exception(Aws::SessionStore::DynamoDB::LockWaitTimeoutError)
       t1.join
       t2.join
     end
