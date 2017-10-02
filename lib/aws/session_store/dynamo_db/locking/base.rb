@@ -127,7 +127,7 @@ module Aws::SessionStore::DynamoDB::Locking
     # Update client with current time + max_stale.
     def expire_at
       max_stale = @config.max_stale || 0
-      { value: { n: "#{(Time.now + max_stale).to_i}" }, action: 'PUT' }
+      { value: (Time.now + max_stale).to_i, action: 'PUT' }
     end
 
     # Attribute for TTL expiration of session.
@@ -151,7 +151,7 @@ module Aws::SessionStore::DynamoDB::Locking
       return false unless env['rack.initial_data']
       env['rack.initial_data'] == session
     end
-    
+
     # Attributes to be retrieved via client
     def attr_opts
       {:attributes_to_get => ["data"],
