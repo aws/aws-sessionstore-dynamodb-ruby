@@ -18,7 +18,7 @@ gemspec
 gem 'rake', '~> 12.0'
 
 group :documentation do
-  gem 'yard', '~> 0.0'
+  gem 'yard', '~> 0.9.11'
 end
 
 group :test do
