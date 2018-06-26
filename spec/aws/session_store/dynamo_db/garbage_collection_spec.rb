@@ -17,7 +17,7 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
   def member(min,max)
     member = []
     for i in min..max
-      member << {"session_id"=>{:s=>"#{i}"}}
+      member << {"session_id"=>"#{i}"}
     end
     member
   end
@@ -25,7 +25,7 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
   def format_scan_result
     member = []
     for i in 31..49
-      member << {"session_id"=>{:s=>"#{i}"}}
+      member << {"session_id"=>"#{i}"}
     end
 
     member.inject([]) do |rqst_array, item|
@@ -40,61 +40,55 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
   end
 
   let(:scan_resp1){
-    resp = {
-      :member => member(0, 49),
+    Aws::DynamoDB::Types::ScanOutput.new({
+      :items => member(0, 49),
       :count => 50,
       :scanned_count => 1000,
       :last_evaluated_key => {}
-    }
+    })
   }
 
   let(:scan_resp2){
-    {
-      :member => member(0, 31),
-      :last_evaluated_key => {"session_id"=>{:s=>"31"}}
-    }
+    Aws::DynamoDB::Types::ScanOutput.new({
+      :items => member(0, 31),
+      :last_evaluated_key => {"session_id"=>"31"}
+    })
   }
 
   let(:scan_resp3){
-    {
-      :member => member(31,49),
+    Aws::DynamoDB::Types::ScanOutput.new({
+      :items => member(31,49),
       :last_evaluated_key => {}
-    }
+    })
   }
 
   let(:write_resp1){
-    {
+    Aws::DynamoDB::Types::BatchWriteItemOutput.new({
       :unprocessed_items => {}
-    }
+    })
   }
 
   let(:write_resp2){
-    {
+    Aws::DynamoDB::Types::BatchWriteItemOutput.new({
       :unprocessed_items => {
         "sessions" => [
           {
             :delete_request => {
               :key => {
-                "session_id" =>
-                {
-                  :s => "1"
-                }
+                "session_id" => "1"
               }
             }
           },
           {
             :delete_request => {
               :key => {
-                "session_id" =>
-                {
-                  :s => "17"
-                }
+                "session_id" => "17"
               }
             }
           }
         ]
       }
-    }
+    })
   }
 
   let(:dynamo_db_client) {Aws::DynamoDB::Client.new}
@@ -133,20 +127,14 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
             {
               :delete_request => {
                 :key => {
-                  "session_id" =>
-                  {
-                    :s => "1"
-                  }
+                  "session_id" => "1"
                 }
               }
             },
             {
               :delete_request => {
                 :key => {
-                  "session_id" =>
-                  {
-                    :s => "17"
-                  }
+                  "session_id" => "17"
                 }
               }
             }

@@ -119,7 +119,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Time in which session was updated.
     def updated_at
-      { :value => "#{(Time.now).to_f}", :action  => "PUT" }
+      { :value => (Time.now).to_f, :action  => "PUT" }
     end
 
     # Attributes for locking.
@@ -147,7 +147,7 @@ module Aws::SessionStore::DynamoDB::Locking
     # Expectation of when lock was set.
     def expect_lock_time(env)
       { :expected => {"locked_at" => {
-        :value => "#{env["locked_at"]}", :exists => true}} }
+        :value => env["locked_at"], :exists => true}} }
     end
 
     # Attributes to be retrieved via client
