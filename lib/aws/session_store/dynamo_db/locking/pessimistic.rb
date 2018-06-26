@@ -78,7 +78,7 @@ module Aws::SessionStore::DynamoDB::Locking
       lock_time = result[:attributes]["locked_at"]
       env["locked_at"] = (lock_time).to_f
       env['rack.initial_data'] = result[:item]["data"] if result.members.include? :item
-      unpack_data(result[:attributes]["data"])
+      unpack_data(result[:attributes]["data"]) if result[:attributes].has_key?("data")
     end
 
     # Attempt to bust the lock if the expiration date has expired.
