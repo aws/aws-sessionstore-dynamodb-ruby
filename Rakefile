@@ -11,5 +11,9 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-Dir.glob(File.dirname(__FILE__) + '/tasks/*.rake').each {|file| load file }
+
+Dir.glob('**/*.rake').each do |task_file|
+  load task_file
+end
+
 task :default => 'test:unit'

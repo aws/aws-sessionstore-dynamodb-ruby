@@ -15,10 +15,11 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rake', '~> 12.0'
+gem 'rake', require: false
 
-group :documentation do
-  gem 'yard', '~> 0.9.11'
+group :docs do
+  gem 'yard'
+  gem 'yard-sitemap', '~> 1.0'
 end
 
 group :test do
