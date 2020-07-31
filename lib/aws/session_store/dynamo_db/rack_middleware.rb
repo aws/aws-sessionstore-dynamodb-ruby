@@ -13,7 +13,7 @@
 
 require 'rack/session/abstract/id'
 require 'openssl'
-require 'aws-sdk'
+require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
