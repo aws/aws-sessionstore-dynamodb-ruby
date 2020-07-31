@@ -1,9 +1,11 @@
-require File.dirname(__FILE__) + '/lib/aws/session_store/dynamo_db/version'
+version = File.read(File.expand_path('../VERSION', __FILE__)).strip
 
 Gem::Specification.new do |spec|
   spec.name          = "aws-sessionstore-dynamodb"
-  spec.version       = Aws::SessionStore::DynamoDB::VERSION
-  spec.authors       = ["Ruby Robinson"]
+  spec.version       = version
+  spec.authors       = ["Amazon Web Services"]
+  spec.email         = ["mamuller@amazon.com", "alexwoo@amazon.com"]
+
   spec.summary       = "The Amazon DynamoDB Session Store handles sessions " +
                        "for Ruby web applications using a DynamoDB backend."
   spec.homepage      = "http://github.com/aws/aws-sessionstore-dynamodb-ruby"
@@ -13,6 +15,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'aws-sdk', '~> 2.0'
+  spec.add_dependency 'aws-sdk-dynamodb', '~> 1'
   spec.add_dependency 'rack', '>= 1.6.4'
 end

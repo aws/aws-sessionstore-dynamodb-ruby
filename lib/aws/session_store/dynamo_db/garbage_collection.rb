@@ -11,7 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-require 'aws-sdk'
+require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
   # Collects and deletes unwanted sessions based on
