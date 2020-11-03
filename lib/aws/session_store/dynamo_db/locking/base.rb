@@ -65,7 +65,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # @return [Hash] Options for deleting session.
     def delete_opts(sid)
-      merge_all(table_opts(sid), expected_attributes(sid))
+      table_opts(sid)
     end
 
     # @return [Hash] Options for updating item in Session table.
