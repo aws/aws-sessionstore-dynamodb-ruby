@@ -17,7 +17,7 @@ You will need to have an existing Amazon DynamoDB session table in order for the
 application to work. You can generate a migration file for the session table
 with the following command:
 
-    rails generate sessionstore:dynamodb
+    rails generate sessionstore:dynamodb <MigrationName>
 
 To create the table, run migrations as normal with:
 
@@ -103,34 +103,11 @@ options from `config/sessionstore/dynamodb.yml` by default if the file exists.
 If you do not wish to place the configuration YAML file in that location,
 you can also pass in a different file path to pull options from.
 
-### Garbage Collection
+### Session Expiration
 
-You may want to delete old sessions from your session table. The
-following examples show how to clear old sessions from your table.
-
-#### Rails
-
-A Rake task for garbage collection is provided for Rails applications.
-By default sessions do not expire. See `config/sessionstore/dynamodb.yml` to
-configure the max age or stale period of a session. Once you have configured
-those values you can clear the old sessions with:
-
-    rake dynamo_db:collect_garbage
-
-#### Outside of Rails
-
-You can create your own Rake task for garbage collection similar to below:
-
-    require "aws-sessionstore-dynamodb"
-
-    desc 'Perform Garbage Collection'
-    task :garbage_collect do |t|
-     options = {:max_age => 3600*24, max_stale => 5*3600 }
-     Aws::SessionStore::DynamoDB::GarbageCollection.collect_garbage(options)
-    end
-
-The above example will clear sessions older than one day or that have been
-stale for longer than an hour.
+You may want to delete old sessions from your session table. The [DynamoDB Time
+to Live (TTL)][3] feature can be enabled on your table to automatically reap
+expired sessions. You should enable this feature on the "expire_at" attribute.
 
 ### Locking Strategy
 
@@ -169,3 +146,4 @@ details.
 
 [1]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/frames
 [2]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/AWS/SessionStore/DynamoDB/Configuration#initialize-instance_method
+[3]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html

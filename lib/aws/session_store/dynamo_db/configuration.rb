@@ -1,16 +1,3 @@
-# Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License"). You
-# may not use this file except in compliance with the License. A copy of
-# the License is located at
-#
-#     http://aws.amazon.com/apache2.0/
-#
-# or in the "license" file accompanying this file. This file is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-# ANY KIND, either express or implied. See the License for the specific
-# language governing permissions and limitations under the License.
-
 require 'yaml'
 require 'aws-sdk-dynamodb'
 
@@ -60,8 +47,8 @@ module Aws::SessionStore::DynamoDB
       :read_capacity => 10,
       :write_capacity => 5,
       :raise_errors => false,
-      # :max_age => 7*3600*24,
-      # :max_stale => 3600*5,
+      :max_age => 7*3600*24,
+      :max_stale => 3600*5,
       :enable_locking => false,
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
