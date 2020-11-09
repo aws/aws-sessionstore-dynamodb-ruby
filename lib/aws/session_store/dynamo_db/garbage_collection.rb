@@ -50,7 +50,7 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def eliminate_unwanted_sessions(config, last_key = nil)
       scan_result = scan(config, last_key)
-      batch_delete(config, scan_result[:member])
+      batch_delete(config, scan_result[:items])
       scan_result[:last_evaluated_key] || {}
     end
 

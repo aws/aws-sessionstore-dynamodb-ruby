@@ -14,21 +14,21 @@
 require 'spec_helper'
 
 describe Aws::SessionStore::DynamoDB::GarbageCollection do
-  def member(min,max)
-    member = []
+  def items(min,max)
+    items = []
     for i in min..max
-      member << {"session_id"=>{:s=>"#{i}"}}
+      items << {"session_id"=>{:s=>"#{i}"}}
     end
-    member
+    items
   end
 
   def format_scan_result
-    member = []
+    items = []
     for i in 31..49
-      member << {"session_id"=>{:s=>"#{i}"}}
+      items << {"session_id"=>{:s=>"#{i}"}}
     end
 
-    member.inject([]) do |rqst_array, item|
+    items.inject([]) do |rqst_array, item|
       rqst_array << {:delete_request => {:key => item}}
       rqst_array
     end
@@ -41,7 +41,7 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
 
   let(:scan_resp1){
     resp = {
-      :member => member(0, 49),
+      :items => items(0, 49),
       :count => 50,
       :scanned_count => 1000,
       :last_evaluated_key => {}
@@ -50,14 +50,14 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
 
   let(:scan_resp2){
     {
-      :member => member(0, 31),
+      :items => items(0, 31),
       :last_evaluated_key => {"session_id"=>{:s=>"31"}}
     }
   }
 
   let(:scan_resp3){
     {
-      :member => member(31,49),
+      :items => items(31,49),
       :last_evaluated_key => {}
     }
   }
