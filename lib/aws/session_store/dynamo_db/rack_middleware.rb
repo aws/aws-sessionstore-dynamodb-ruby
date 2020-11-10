@@ -5,7 +5,7 @@ require 'aws-sdk-dynamodb'
 module Aws::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
   # that uses a DynamoDB backend for session storage.
-  class RackMiddleware < Rack::Session::Abstract::ID
+  class RackMiddleware < Rack::Session::Abstract::Persisted
 
     # Initializes SessionStore middleware.
     #
@@ -45,16 +45,16 @@ module Aws::SessionStore::DynamoDB
     end
 
     # Gets session data.
-    def get_session(env, sid)
+    def find_session(req, sid)
       validate_config
       case verify_hmac(sid)
       when nil
-        set_new_session_properties(env)
+        set_new_session_properties(req.env)
       when false
-        handle_error {raise InvalidIDError}
-        set_new_session_properties(env)
+        handle_error { raise InvalidIDError }
+        set_new_session_properties(req.env)
       else
-        data = @lock.get_session_data(env, sid)
+        data = @lock.get_session_data(req.env, sid)
         [sid, data || {}]
       end
     end
@@ -68,15 +68,15 @@ module Aws::SessionStore::DynamoDB
     #
     # @return [Hash] If session has been saved.
     # @return [false] If session has could not be saved.
-    def set_session(env, sid, session, options)
-      @lock.set_session_data(env, sid, session, options)
+    def write_session(req, sid, session, options)
+      @lock.set_session_data(req.env, sid, session, options)
     end
 
     # Destroys session and removes session from database.
     #
     # @return [String] return a new session id or nil if options[:drop]
-    def destroy_session(env, sid, options)
-      @lock.delete_session(env, sid)
+    def delete_session(req, sid, options)
+      @lock.delete_session(req.env, sid)
       generate_sid unless options[:drop]
     end
 
