@@ -240,35 +240,21 @@ module Aws::SessionStore::DynamoDB
       file_path = config_file_path(options)
       if file_path
         load_from_file(file_path)
-      elsif rails_defined && File.exists?(rails_config_file_path)
-        load_from_file(rails_config_file_path)
       else
         {}
       end
     end
 
-    # @return [Boolean] Necessary Rails variables defined.
-    def rails_defined
-      defined?(Rails) && defined?(Rails.root) && defined?(Rails.env)
-    end
-
-    # Load options from YAML file depending on existence of Rails
-    # and possible development stage defined.
+    # Load options from YAML file
     def load_from_file(file_path)
       require "erb"
       opts = YAML.load(ERB.new(File.read(file_path)).result) || {}
-      opts = opts[Rails.env] if rails_defined && opts.key?(Rails.env)
       symbolize_keys(opts)
     end
 
     # @return [String] Configuration path found in environment or YAML file.
     def config_file_path(options)
       options[:config_file] || ENV["DYNAMO_DB_SESSION_CONFIG_FILE"]
-    end
-
-    # @return [String] Rails configuraton path to YAML file default.
-    def rails_config_file_path
-      File.join(Rails.root, "config", "sessionstore/dynamodb.yml")
     end
 
     # Set accessible attributes after merged options.

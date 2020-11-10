@@ -31,4 +31,3 @@ require 'aws/session_store/dynamo_db/locking/pessimistic'
 require 'aws/session_store/dynamo_db/rack_middleware'
 require 'aws/session_store/dynamo_db/table'
 require 'aws/session_store/dynamo_db/version'
-require 'aws/session_store/dynamo_db/railtie' if defined?(Rails)

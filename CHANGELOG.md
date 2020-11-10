@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Remove Rails support (moved to the `aws-sdk-rails` gem).
+
 * Use V3 of Ruby SDK
 
 * Fix a `dynamo_db.scan()` incompatibility from the V1 -> V2 upgrade in the garbage collector.

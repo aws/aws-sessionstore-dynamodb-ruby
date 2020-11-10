@@ -68,30 +68,6 @@ describe Aws::SessionStore::DynamoDB::Configuration do
       expected_options(runtime_opts)
     end
 
-    it "loads options from YAML file based on Rails environment" do
-      rails = double('Rails', {:env => 'test', :root => ''})
-      stub_const("Rails", rails)
-      config_path = File.dirname(__FILE__) + '/rails_app_config.yml'
-      runtime_opts = {:config_file => config_path}.merge(runtime_options)
-      expected_options(runtime_opts)
-    end
-
-    it "has rails defiend but no file specified, no error thrown" do
-      rails = double('Rails', {:env => 'test', :root => ''})
-      stub_const("Rails", rails)
-      cfg = Aws::SessionStore::DynamoDB::Configuration.new(runtime_options)
-      expected_opts = defaults.merge(runtime_options)
-      cfg.to_hash.should include(expected_opts)
-    end
-
-    it "has rails defiend but and default rails YAML file loads" do
-      rails = double('Rails', {:env => 'test', :root => File.dirname(__FILE__)})
-      stub_const("Rails", rails)
-      cfg = Aws::SessionStore::DynamoDB::Configuration.new(runtime_options)
-      expected_opts = defaults.merge(runtime_options)
-      cfg.to_hash.should include(expected_opts)
-    end
-
     it "throws an exception when wrong path for file" do
       config_path = 'Wrong path!'
       runtime_opts = {:config_file => config_path}.merge(runtime_options)
