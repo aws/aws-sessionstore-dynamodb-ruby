@@ -54,34 +54,34 @@ module Aws
         context "Testing best case session storage", :integration => true do
           it "stores session data in session object" do
             get "/"
-            last_request.session[:multiplier].should eq(1)
+            expect(last_request.session[:multiplier]).to eq(1)
           end
 
           it "creates a new HTTP cookie when Cookie not supplied" do
             get "/"
-            last_response.body.should eq('All good!')
-            last_response['Set-Cookie'].should be_truthy
+            expect(last_response.body).to eq('All good!')
+            expect(last_response['Set-Cookie']).to be_truthy
           end
 
           it "does not rewrite Cookie if cookie previously/accuarately set" do
             get "/"
-            last_response['Set-Cookie'].should_not be_nil
+            expect(last_response['Set-Cookie']).not_to be_nil
 
 
             get "/"
-            last_response['Set-Cookie'].should be_nil
+            expect(last_response['Set-Cookie']).to be_nil
           end
 
           it "does not set cookie when defer option is specifed" do
             @options[:defer] = true
             get "/"
-            last_response['Set-Cookie'].should be_nil
+            expect(last_response['Set-Cookie']).to be_nil
           end
 
-          it "creates new sessopm with false/nonexistant http-cookie id" do
+          it "creates new session with false/nonexistant http-cookie id" do
             get "/", {}, invalid_cookie.merge(invalid_session_data)
-            last_response['Set-Cookie'].should_not eq("rack.session=ApplePieBlueberries")
-            last_response['Set-Cookie'].should_not be_nil
+            expect(last_response['Set-Cookie']).not_to eq("rack.session=ApplePieBlueberries")
+            expect(last_response['Set-Cookie']).not_to be_nil
           end
 
           it "expires after specified time and sets date for cookie to expire" do
@@ -91,36 +91,36 @@ module Aws
             sleep(1.2)
 
             get "/"
-            last_response['Set-Cookie'].should_not be_nil
-            last_response['Set-Cookie'].should_not eq(session_cookie)
+            expect(last_response['Set-Cookie']).not_to be_nil
+            expect(last_response['Set-Cookie']).not_to eq(session_cookie)
           end
 
           it "will not set a session cookie when defer is true" do
             @options[:defer] = true
             get "/"
-            last_response['Set-Cookie'].should eq(nil)
+            expect(last_response['Set-Cookie']).to be_nil
           end
 
           it "adds the created at attribute for a new session" do
             get "/"
-            last_request.env["dynamo_db.new_session"].should eq("true")
+            expect(last_request.env["dynamo_db.new_session"]).to eq("true")
             sid = last_response['Set-Cookie'].split(/[;\=]/)[1]
             time = extract_time(sid)
-            time.should be_within(2).of(Time.now)
+            expect(time).to be_within(2).of(Time.now)
 
             get "/"
-            last_request.env['dynamo_db.new_session'].should be(nil)
+            expect(last_request.env['dynamo_db.new_session']).to be_nil
           end
 
           it "releases pessimistic lock at finish of transaction" do
             @options[:enable_locking] = true
             get "/"
-            last_request.env["dynamo_db.new_session"].should eq("true")
+            expect(last_request.env["dynamo_db.new_session"]).to eq('true')
             sid = last_response['Set-Cookie'].split(/[;\=]/)[1]
 
             get "/"
             options = table_opts(sid).merge(attr_opts)
-            client.get_item(options)[:item]["locked_at"].should be_nil
+            expect(client.get_item(options)[:item]["locked_at"]).to be_nil
           end
         end
       end

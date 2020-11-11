@@ -21,7 +21,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
     Thread.new do
       sleep(time)
       get "/"
-      last_request.session[:multiplier].should eq(mul_val) if check
+      expect(last_request.session[:multiplier]).to eq(mul_val) if check
     end
   end
 
@@ -48,7 +48,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       @options[:secret_key] = 'watermelon_smiles'
 
       update_method = @options[:dynamo_db_client].method(:update_item)
-      @options[:dynamo_db_client].should_receive(:update_item).at_least(:once) do |options|
+      expect(@options[:dynamo_db_client]).to receive(:update_item).at_least(:once) do |options|
         update_item_mock(options, update_method)
       end
     end
@@ -57,7 +57,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       @options[:lock_expiry_time] = 2000
 
       get "/"
-      last_request.session[:multiplier].should eq(1)
+      expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread(2, 0, false)
       t2 = thread(4, 0.25, true)
@@ -69,7 +69,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       @options[:lock_expiry_time] = 100
 
       get "/"
-      last_request.session[:multiplier].should eq(1)
+      expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread_exception(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
       t2 = thread(2, 0.25, true)
@@ -83,7 +83,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       @options[:lock_max_wait_time] = 0.25
 
       get "/"
-      last_request.session[:multiplier].should eq(1)
+      expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread(2, 0, false)
       sleep(0.25)

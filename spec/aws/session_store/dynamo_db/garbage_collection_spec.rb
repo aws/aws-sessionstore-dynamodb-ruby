@@ -102,31 +102,31 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
   context "Mock DynamoDB client with garbage collection" do
 
     it "processes scan result greater than 25 and deletes in batches of 25" do
-      dynamo_db_client.should_receive(:scan).
+      expect(dynamo_db_client).to receive(:scan).
         exactly(1).times.and_return(scan_resp1)
-      dynamo_db_client.should_receive(:batch_write_item).
+      expect(dynamo_db_client).to receive(:batch_write_item).
         exactly(2).times.and_return(write_resp1)
       collect_garbage
     end
 
     it "gets scan results then returns last evaluated key and resumes scanning" do
-      dynamo_db_client.should_receive(:scan).
+      expect(dynamo_db_client).to receive(:scan).
         exactly(1).times.and_return(scan_resp2)
-      dynamo_db_client.should_receive(:scan).
+      expect(dynamo_db_client).to receive(:scan).
         exactly(1).times.with(hash_including(exclusive_start_key: scan_resp2[:last_evaluated_key])).
         and_return(scan_resp3)
-      dynamo_db_client.should_receive(:batch_write_item).
+      expect(dynamo_db_client).to receive(:batch_write_item).
         exactly(3).times.and_return(write_resp1)
         collect_garbage
     end
 
     it "it formats unprocessed_items and then batch deletes them" do
-      dynamo_db_client.should_receive(:scan).
+      expect(dynamo_db_client).to receive(:scan).
         exactly(1).times.and_return(scan_resp3)
-      dynamo_db_client.should_receive(:batch_write_item).ordered.
+      expect(dynamo_db_client).to receive(:batch_write_item).ordered.
         with(:request_items => {"sessions" => format_scan_result}).
         and_return(write_resp2)
-      dynamo_db_client.should_receive(:batch_write_item).ordered.with(
+      expect(dynamo_db_client).to receive(:batch_write_item).ordered.with(
         :request_items =>
         {
           "sessions" => [

@@ -47,19 +47,19 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   def expected_options(opts)
     cfg = Aws::SessionStore::DynamoDB::Configuration.new(opts)
     expected_opts = defaults.merge(expected_file_opts).merge(opts)
-    cfg.to_hash.should include(expected_opts)
+    expect(cfg.to_hash).to include(expected_opts)
   end
 
   context "Configuration Tests" do
     it "configures option with out runtime,YAML or ENV options" do
       cfg = Aws::SessionStore::DynamoDB::Configuration.new
-      cfg.to_hash.should include(defaults)
+      expect(cfg.to_hash).to include(defaults)
     end
 
     it "configures accurate option hash with runtime options, no YAML or ENV" do
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(runtime_options)
       expected_opts = defaults.merge(runtime_options)
-      cfg.to_hash.should include(expected_opts)
+      expect(cfg.to_hash).to include(expected_opts)
     end
 
     it "merge YAML and runtime options giving runtime precendence" do
