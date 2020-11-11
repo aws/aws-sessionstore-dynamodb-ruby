@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
@@ -11,7 +13,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 require 'spec_helper'
 
 describe Aws::SessionStore::DynamoDB::RackMiddleware do
@@ -20,17 +21,17 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
   def thread(mul_val, time, check)
     Thread.new do
       sleep(time)
-      get "/"
+      get '/'
       expect(last_request.session[:multiplier]).to eq(mul_val) if check
     end
   end
 
   def thread_exception(error)
-    Thread.new { expect { get "/" }.to raise_error(error) }
+    Thread.new { expect { get '/' }.to raise_error(error) }
   end
 
   def update_item_mock(options, update_method)
-    if options[:return_values] == "UPDATED_NEW" && options.has_key?(:expected)
+    if options[:return_values] == 'UPDATED_NEW' && options.key?(:expected)
       sleep(0.50)
       update_method.call(options)
     else
@@ -41,7 +42,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
   let(:base_app) { MultiplierApplication.new }
   let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
 
-  context "Mock Multiple Threaded Sessions", :integration => true do
+  context 'Mock Multiple Threaded Sessions', integration: true do
     before do
       @options = Aws::SessionStore::DynamoDB::Configuration.new.to_hash
       @options[:enable_locking] = true
@@ -53,10 +54,10 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       end
     end
 
-    it "should wait for lock" do
+    it 'should wait for lock' do
       @options[:lock_expiry_time] = 2000
 
-      get "/"
+      get '/'
       expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread(2, 0, false)
@@ -65,10 +66,10 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       t2.join
     end
 
-    it "should bust lock" do
+    it 'should bust lock' do
       @options[:lock_expiry_time] = 100
 
-      get "/"
+      get '/'
       expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread_exception(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
@@ -77,12 +78,12 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
       t2.join
     end
 
-    it "should throw exceeded time spent aquiring lock error" do
+    it 'should throw exceeded time spent aquiring lock error' do
       @options[:lock_expiry_time] = 1000
       @options[:lock_retry_delay] = 100
       @options[:lock_max_wait_time] = 0.25
 
-      get "/"
+      get '/'
       expect(last_request.session[:multiplier]).to eq(1)
 
       t1 = thread(2, 0, false)
