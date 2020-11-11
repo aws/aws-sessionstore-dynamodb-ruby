@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
@@ -11,7 +13,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 require 'spec_helper'
 
 describe Aws::SessionStore::DynamoDB do
@@ -20,43 +21,44 @@ describe Aws::SessionStore::DynamoDB do
   instance_exec(&ConstantHelpers)
 
   before do
-    @options = { :dynamo_db_client => client, :secret_key => 'meltingbutter' }
+    @options = { dynamo_db_client: client, secret_key: 'meltingbutter' }
   end
 
   let(:base_app) { MultiplierApplication.new }
   let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
   let(:client) { double('Aws::DynamoDB::Client') }
 
-  context "Error handling for Rack Middleware with default error handler" do
-    it "raises error for missing secret key" do
-      client.stub(:update_item).and_raise(missing_key_error)
-      lambda { get "/" }.should raise_error(missing_key_error)
+  context 'Error handling for Rack Middleware with default error handler' do
+    it 'raises error for missing secret key' do
+      allow(client).to receive(:update_item).and_raise(missing_key_error)
+      expect { get '/' }.to raise_error(missing_key_error)
     end
 
-    it "catches exception for inaccurate table name and raises error " do
-      client.stub(:update_item).and_raise(resource_error)
-      lambda { get "/" }.should raise_error(resource_error)
+    it 'catches exception for inaccurate table name and raises error ' do
+      allow(client).to receive(:update_item).and_raise(resource_error)
+      expect { get '/' }.to raise_error(resource_error)
     end
 
-    it "catches exception for inaccurate table key" do
-      client.stub(:update_item).and_raise(key_error)
-      client.stub(:get_item).and_raise(key_error)
-      get "/"
-      last_request.env["rack.errors"].string.should include(key_error_msg)
+    it 'catches exception for inaccurate table key' do
+      allow(client).to receive(:update_item).and_raise(key_error)
+      allow(client).to receive(:get_item).and_raise(key_error)
+
+      get '/'
+      expect(last_request.env['rack.errors'].string).to include(key_error_msg)
     end
   end
 
-  context "Test ExceptionHandler with true as return value for handle_error" do
-    it "raises all errors" do
+  context 'Test ExceptionHandler with true as return value for handle_error' do
+    it 'raises all errors' do
       @options[:raise_errors] = true
-      client.stub(:update_item).and_raise(client_error)
-      lambda { get "/" }.should raise_error(client_error)
+      allow(client).to receive(:update_item).and_raise(client_error)
+      expect { get '/' }.to raise_error(client_error)
     end
 
-    it "catches exception for inaccurate table key and raises error" do
+    it 'catches exception for inaccurate table key and raises error' do
       @options[:raise_errors] = true
-      client.stub(:update_item).and_raise(key_error)
-      lambda { get "/" }.should raise_error(key_error)
+      allow(client).to receive(:update_item).and_raise(key_error)
+      expect { get '/' }.to raise_error(key_error)
     end
   end
 end

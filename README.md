@@ -1,38 +1,12 @@
 # Amazon DynamoDB Session Store
 
 The **Amazon DynamoDB Session Store** handles sessions for Ruby web applications
-using a DynamoDB backend. The session store is compatible with Rails (3.x or 4.x)
-and other Rack based frameworks.
+using a DynamoDB backend. The session store is compatible with all Rack based
+frameworks. For Rails applications, use the [`aws-sdk-rails`][1] gem.
 
 ## Installation
 
-#### Rails Installation
-
-Install the session store gem by placing the following command into your
-Gemfile:
-
-    gem 'aws-sessionstore-dynamodb'
-
-You will need to have an existing Amazon DynamoDB session table in order for the
-application to work. You can generate a migration file for the session table
-with the following command:
-
-    rails generate sessionstore:dynamodb
-
-To create the table, run migrations as normal with:
-
-    rake db:migrate
-
-Change the session store to `:dynamodb_store` by editing
-`config/initializers/session_store.rb` to contain the following:
-
-    YourAppName::Application.config.session_store :dynamodb_store
-
-You can now start your Rails application with session support.
-
-#### Basic Rack Application Installation
-
-For non-Rails applications, you can create the Amazon DynamoDB table in a
+For Rack applications, you can create the Amazon DynamoDB table in a
 Ruby file using the following method:
 
     require 'aws-sessionstore-dynamodb'
@@ -66,18 +40,17 @@ discouraging sensitive data storage. It also forces strict data size
 limitations. DynamoDB takes care of these concerns by allowing for a safe and
 scalable storage container with a much larger data size limit for session data.
 
-Full API documentation of the library can be found on [RubyDoc.info][1].
+For more developer information, see the [Full API documentation][2].
 
 ### Configuration Options
 
 A number of options are available to be set in
 `Aws::SessionStore::DynamoDB::Configuration`, which is used by the
-`RackMiddleware` class. These options can be set in the YAML configuration
-file in a Rails application (located in `config/sessionstore/dynamodb.yml`),
-directly by Ruby code, or through environment variables.
+`RackMiddleware` class. These options can be set directly by Ruby code or
+through environment variables.
 
 The full set of options along with defaults can be found in the
-[Configuration class documentation][2].
+[Configuration class documentation][3].
 
 #### Environment Options
 
@@ -90,36 +63,15 @@ The example below would be a valid way to set the session table name:
 
     export DYNAMO_DB_SESSION_TABLE_NAME='sessions'
 
-### Rails Generator Details
-
-The generator command specified in the installation section will generate two
-files: a migration file, `db/migration/VERSION_migration_name.rb`, and a
-configuration YAML file, `config/sessionstore/dynamodb.yml`.
-
-You can run the command with an argument that will define the name of the
-migration file. Once the YAML file is created, you can uncomment any of the
-lines to set configuration options to your liking. The session store will pull
-options from `config/sessionstore/dynamodb.yml` by default if the file exists.
-If you do not wish to place the configuration YAML file in that location,
-you can also pass in a different file path to pull options from.
-
 ### Garbage Collection
 
-You may want to delete old sessions from your session table. The
-following examples show how to clear old sessions from your table.
+You may want to delete old sessions from your session table. You can use the
+DynamoDB [Time to Live (TTL) feature][4] on the `expire_at` attribute to
+automatically delete expired items.
 
-#### Rails
-
-A Rake task for garbage collection is provided for Rails applications.
-By default sessions do not expire. See `config/sessionstore/dynamodb.yml` to
-configure the max age or stale period of a session. Once you have configured
-those values you can clear the old sessions with:
-
-    rake dynamo_db:collect_garbage
-
-#### Outside of Rails
-
-You can create your own Rake task for garbage collection similar to below:
+If you want to take other attributes into consideration for deletion, you could
+instead use the `GarbageCollection` class. You can create your own Rake task for
+garbage collection similar to below:
 
     require "aws-sessionstore-dynamodb"
 
@@ -167,5 +119,7 @@ the default error handler to them for you. See the API documentation
 on the {Aws::SessionStore::DynamoDB::Errors::BaseHandler} class for more
 details.
 
-[1]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/frames
-[2]: http://rubydoc.org/gems/aws-sessionstore-dynamodb/AWS/SessionStore/DynamoDB/Configuration#initialize-instance_method
+[1]: https://github.com/aws/aws-sdk-rails/
+[2]: https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/
+[3]: https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
+[4]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
