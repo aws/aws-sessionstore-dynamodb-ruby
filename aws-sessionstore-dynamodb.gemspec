@@ -16,5 +16,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1'
-  spec.add_dependency 'rack', '>= 1.6.4'
+  spec.add_dependency 'rack', '~> 2'
 end
