@@ -1,4 +1,4 @@
-Unreleased Changes
+2.0.0 (2020-11-11)
 ------------------
 
 * Remove Rails support (moved to the `aws-sdk-rails` gem).
