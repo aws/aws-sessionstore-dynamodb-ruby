@@ -14,7 +14,7 @@ module Aws::SessionStore::DynamoDB::Locking
       packed_session = pack_data(session)
       handle_error(env) do
         save_opts = update_opts(env, sid, packed_session, options)
-        result = @config.dynamo_db_client.update_item(save_opts)
+        @config.dynamo_db_client.update_item(save_opts)
         sid
       end
     end
