@@ -1,6 +1,10 @@
 Unreleased Changes
 ------------------
 
+* Issue - Expose `:config` in `RackMiddleware` and `:config_file` in `Configuration`.
+
+* Issue - V2 of this release was still loading SDK V1 credential keys. This removes support for client options specified in YAML configuration (behavior change). Instead, construct `Aws::DynamoDB::Client` and use the `dynamo_db_client` option.
+
 2.0.0 (2020-11-11)
 ------------------
 
