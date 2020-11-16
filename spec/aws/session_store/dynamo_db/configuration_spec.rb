@@ -30,13 +30,12 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   let(:expected_file_opts) do
     {
       consistent_read: true,
-      AWS_ACCESS_KEY_ID: 'FakeKey',
-      AWS_REGION: 'New York',
       table_name: 'NewTable',
       table_key: 'Somekey',
-      AWS_SECRET_ACCESS_KEY: 'Secret'
     }
   end
+
+  let(:client) { Aws::DynamoDB::Client.new(stub_responses: true) }
 
   let(:runtime_options) do
     {
@@ -49,6 +48,10 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     cfg = Aws::SessionStore::DynamoDB::Configuration.new(opts)
     expected_opts = defaults.merge(expected_file_opts).merge(opts)
     expect(cfg.to_hash).to include(expected_opts)
+  end
+
+  before do
+    allow(Aws::DynamoDB::Client).to receive(:new).and_return(client)
   end
 
   context 'Configuration Tests' do

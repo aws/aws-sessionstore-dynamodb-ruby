@@ -114,6 +114,9 @@ module Aws::SessionStore::DynamoDB
     # @return [String] The secret key for HMAC encryption.
     attr_reader :secret_key
 
+    # @return [String,Pathname]
+    attr_reader :config_file
+
     ### Client and Error Handling options
 
     # @return [DynamoDB Client] DynamoDB client.

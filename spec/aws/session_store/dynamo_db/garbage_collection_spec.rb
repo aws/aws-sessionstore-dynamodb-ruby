@@ -98,7 +98,7 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
     }
   end
 
-  let(:dynamo_db_client) {Aws::DynamoDB::Client.new}
+  let(:dynamo_db_client) {Aws::DynamoDB::Client.new(stub_responses: true)}
 
   context 'Mock DynamoDB client with garbage collection' do
     it 'processes scan result greater than 25 and deletes in batches of 25' do

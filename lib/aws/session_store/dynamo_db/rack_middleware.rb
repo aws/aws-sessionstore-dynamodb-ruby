@@ -6,6 +6,9 @@ module Aws::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
   # that uses a DynamoDB backend for session storage.
   class RackMiddleware < Rack::Session::Abstract::Persisted
+    # @return [Configuration] An instance of Configuration that is used for
+    #   this middleware.
+    attr_reader :config
 
     # Initializes SessionStore middleware.
     #
