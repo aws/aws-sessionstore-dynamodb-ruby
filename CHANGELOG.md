@@ -1,4 +1,4 @@
-Unreleased Changes
+2.0.1 (2020-11-16)
 ------------------
 
 * Issue - Expose `:config` in `RackMiddleware` and `:config_file` in `Configuration`.
