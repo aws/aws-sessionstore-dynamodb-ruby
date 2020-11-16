@@ -56,6 +56,8 @@ module Aws::SessionStore::DynamoDB
       :secret_key => nil
     }
 
+    ### Feature options
+
     # @return [String] Session table name.
     attr_reader :table_name
 
@@ -84,14 +86,6 @@ module Aws::SessionStore::DynamoDB
     #   ErrorHandler is used.
     attr_reader :raise_errors
 
-    # @return [DynamoDB Client] DynamoDB client.
-    attr_reader :dynamo_db_client
-
-    # @return [Error Handler] An error handling object that handles all exceptions
-    #   thrown during execution of the AWS DynamoDB Session Store Rack Middleware.
-    #   For more information see the Handling Errors Section.
-    attr_reader :error_handler
-
     # @return [Integer] Maximum number of seconds earlier
     #   from the current time that a session was created.
     attr_reader :max_age
@@ -99,9 +93,6 @@ module Aws::SessionStore::DynamoDB
     # @return [Integer] Maximum number of seconds
     #   before the current time that the session was last accessed.
     attr_reader :max_stale
-
-    # @return [String] The secret key for HMAC encryption.
-    attr_reader :secret_key
 
     # @return [true] Pessimistic locking strategy will be implemented for
     #   all session accesses.
@@ -120,6 +111,18 @@ module Aws::SessionStore::DynamoDB
     #   before giving up.
     attr_reader :lock_max_wait_time
 
+    # @return [String] The secret key for HMAC encryption.
+    attr_reader :secret_key
+
+    ### Client and Error Handling options
+
+    # @return [DynamoDB Client] DynamoDB client.
+    attr_reader :dynamo_db_client
+
+    # @return [Error Handler] An error handling object that handles all exceptions
+    #   thrown during execution of the AWS DynamoDB Session Store Rack Middleware.
+    #   For more information see the Handling Errors Section.
+    attr_reader :error_handler
 
     # Provides configuration object that allows access to options defined
     # during Runtime, in a YAML file, in the ENV and by default.
@@ -163,18 +166,16 @@ module Aws::SessionStore::DynamoDB
     # @option options [Integer] :lock_retry_delay (500) Time in milleseconds to
     #   wait before retrying to obtain lock once an attempt to obtain lock
     #   has been made and has failed.
-    # @option options [Integer] :lock_max_wait_time (500) Maximum time in seconds
-    #   to wait to acquire lock before giving up.
+    # @option options [Integer] :lock_max_wait_time (500) Maximum time
+    #   in seconds to wait to acquire lock before giving up.
     # @option options [String] :secret_key (SecureRandom.hex(64))
     #   Secret key for HMAC encription.
     def initialize(options = {})
       @options = default_options.merge(
-      env_options.merge(
-          file_options(options).merge(
-            symbolize_keys(options)
-           )
-         )
-       )
+        env_options.merge(
+          file_options(options).merge(symbolize_keys(options))
+        )
+      )
       @options = client_error.merge(@options)
       set_attributes(@options)
     end
@@ -188,8 +189,7 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
-      client_opts = client_subset(@options)
-      client_opts[:user_agent_suffix] = _user_agent(@options.delete(:user_agent_suffix))
+      client_opts = { user_agent_suffix: " aws-sessionstore/#{VERSION}" }
       client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
@@ -256,23 +256,6 @@ module Aws::SessionStore::DynamoDB
       options.inject({}) do |opts, (opt_name, opt_value)|
         opts[opt_name.to_sym] = opt_value
         opts
-      end
-    end
-
-    # @return [Hash] Client subset options hash.
-    def client_subset(options = {})
-      client_keys = [:secret_access_key, :region, :access_key_id, :session_token]
-      options.inject({}) do |opts, (opt_name, opt_value)|
-        opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
-        opts
-      end
-    end
-
-    def _user_agent(custom)
-      if custom
-        custom
-      else
-        " aws-sessionstore/#{VERSION}"
       end
     end
   end
