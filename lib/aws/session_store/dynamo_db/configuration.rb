@@ -1,18 +1,5 @@
-# Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License"). You
-# may not use this file except in compliance with the License. A copy of
-# the License is located at
-#
-#     http://aws.amazon.com/apache2.0/
-#
-# or in the "license" file accompanying this file. This file is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-# ANY KIND, either express or implied. See the License for the specific
-# language governing permissions and limitations under the License.
-
 require 'yaml'
-require 'aws-sdk'
+require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
@@ -69,6 +56,8 @@ module Aws::SessionStore::DynamoDB
       :secret_key => nil
     }
 
+    ### Feature options
+
     # @return [String] Session table name.
     attr_reader :table_name
 
@@ -97,14 +86,6 @@ module Aws::SessionStore::DynamoDB
     #   ErrorHandler is used.
     attr_reader :raise_errors
 
-    # @return [DynamoDB Client] DynamoDB client.
-    attr_reader :dynamo_db_client
-
-    # @return [Error Handler] An error handling object that handles all exceptions
-    #   thrown during execution of the AWS DynamoDB Session Store Rack Middleware.
-    #   For more information see the Handling Errors Section.
-    attr_reader :error_handler
-
     # @return [Integer] Maximum number of seconds earlier
     #   from the current time that a session was created.
     attr_reader :max_age
@@ -112,9 +93,6 @@ module Aws::SessionStore::DynamoDB
     # @return [Integer] Maximum number of seconds
     #   before the current time that the session was last accessed.
     attr_reader :max_stale
-
-    # @return [String] The secret key for HMAC encryption.
-    attr_reader :secret_key
 
     # @return [true] Pessimistic locking strategy will be implemented for
     #   all session accesses.
@@ -133,6 +111,21 @@ module Aws::SessionStore::DynamoDB
     #   before giving up.
     attr_reader :lock_max_wait_time
 
+    # @return [String] The secret key for HMAC encryption.
+    attr_reader :secret_key
+
+    # @return [String,Pathname]
+    attr_reader :config_file
+
+    ### Client and Error Handling options
+
+    # @return [DynamoDB Client] DynamoDB client.
+    attr_reader :dynamo_db_client
+
+    # @return [Error Handler] An error handling object that handles all exceptions
+    #   thrown during execution of the AWS DynamoDB Session Store Rack Middleware.
+    #   For more information see the Handling Errors Section.
+    attr_reader :error_handler
 
     # Provides configuration object that allows access to options defined
     # during Runtime, in a YAML file, in the ENV and by default.
@@ -176,18 +169,16 @@ module Aws::SessionStore::DynamoDB
     # @option options [Integer] :lock_retry_delay (500) Time in milleseconds to
     #   wait before retrying to obtain lock once an attempt to obtain lock
     #   has been made and has failed.
-    # @option options [Integer] :lock_max_wait_time (500) Maximum time in seconds
-    #   to wait to acquire lock before giving up.
+    # @option options [Integer] :lock_max_wait_time (500) Maximum time
+    #   in seconds to wait to acquire lock before giving up.
     # @option options [String] :secret_key (SecureRandom.hex(64))
     #   Secret key for HMAC encription.
     def initialize(options = {})
       @options = default_options.merge(
-      env_options.merge(
-          file_options(options).merge(
-            symbolize_keys(options)
-           )
-         )
-       )
+        env_options.merge(
+          file_options(options).merge(symbolize_keys(options))
+        )
+      )
       @options = client_error.merge(@options)
       set_attributes(@options)
     end
@@ -201,8 +192,7 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
-      client_opts = client_subset(@options)
-      client_opts[:user_agent_suffix] = _user_agent(@options.delete(:user_agent_suffix))
+      client_opts = { user_agent_suffix: " aws-sessionstore/#{VERSION}" }
       client = Aws::DynamoDB::Client
       dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
       {:dynamo_db_client => dynamo_db_client}
@@ -240,35 +230,21 @@ module Aws::SessionStore::DynamoDB
       file_path = config_file_path(options)
       if file_path
         load_from_file(file_path)
-      elsif rails_defined && File.exists?(rails_config_file_path)
-        load_from_file(rails_config_file_path)
       else
         {}
       end
     end
 
-    # @return [Boolean] Necessary Rails variables defined.
-    def rails_defined
-      defined?(Rails) && defined?(Rails.root) && defined?(Rails.env)
-    end
-
-    # Load options from YAML file depending on existence of Rails
-    # and possible development stage defined.
+    # Load options from YAML file
     def load_from_file(file_path)
       require "erb"
       opts = YAML.load(ERB.new(File.read(file_path)).result) || {}
-      opts = opts[Rails.env] if rails_defined && opts.key?(Rails.env)
       symbolize_keys(opts)
     end
 
     # @return [String] Configuration path found in environment or YAML file.
     def config_file_path(options)
       options[:config_file] || ENV["DYNAMO_DB_SESSION_CONFIG_FILE"]
-    end
-
-    # @return [String] Rails configuraton path to YAML file default.
-    def rails_config_file_path
-      File.join(Rails.root, "config", "sessionstore/dynamodb.yml")
     end
 
     # Set accessible attributes after merged options.
@@ -283,23 +259,6 @@ module Aws::SessionStore::DynamoDB
       options.inject({}) do |opts, (opt_name, opt_value)|
         opts[opt_name.to_sym] = opt_value
         opts
-      end
-    end
-
-    # @return [Hash] Client subset options hash.
-    def client_subset(options = {})
-      client_keys = [:aws_secret_key, :aws_region, :aws_access_key, :api_version]
-      options.inject({}) do |opts, (opt_name, opt_value)|
-        opts[opt_name.to_sym] = opt_value if client_keys.include?(opt_name.to_sym)
-        opts
-      end
-    end
-
-    def _user_agent(custom)
-      if custom
-        custom
-      else
-        " aws-sessionstore/#{VERSION}"
       end
     end
   end

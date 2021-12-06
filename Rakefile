@@ -1,15 +1,35 @@
-# Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License"). You
-# may not use this file except in compliance with the License. A copy of
-# the License is located at
-#
-#     http://aws.amazon.com/apache2.0/
-#
-# or in the "license" file accompanying this file. This file is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-# ANY KIND, either express or implied. See the License for the specific
-# language governing permissions and limitations under the License.
+require 'rspec/core/rake_task'
 
-Dir.glob(File.dirname(__FILE__) + '/tasks/*.rake').each {|file| load file }
-task :default => 'test:unit'
+$REPO_ROOT = File.dirname(__FILE__)
+$LOAD_PATH.unshift(File.join($REPO_ROOT, 'lib'))
+$VERSION = ENV['VERSION'] || File.read(File.join($REPO_ROOT, 'VERSION')).strip
+
+
+Dir.glob('**/*.rake').each do |task_file|
+  load task_file
+end
+
+task 'test:coverage:clear' do
+  sh("rm -rf #{File.join($REPO_ROOT, 'coverage')}")
+end
+
+desc 'Runs unit tests'
+RSpec::Core::RakeTask.new do |t|
+  t.rspec_opts = "-I #{$REPO_ROOT}/lib -I #{$REPO_ROOT}/spec --tag ~integration"
+  t.pattern = "#{$REPO_ROOT}/spec"
+end
+task :spec => 'test:coverage:clear'
+
+desc 'Runs integration tests'
+RSpec::Core::RakeTask.new('spec:integration') do |t|
+  t.rspec_opts = "-I #{$REPO_ROOT}/lib -I #{$REPO_ROOT}/spec --tag integration"
+  t.pattern = "#{$REPO_ROOT}/spec"
+end
+
+desc 'Runs unit and integration tests'
+task 'test' => [:spec, 'spec:integration']
+
+task :default => :spec
+task 'release:test' => [:spec, 'spec:integration']
+
+
