@@ -53,7 +53,8 @@ module Aws
             delete_item: 'Deleted',
             list_tables: { table_names: ['Sessions'] },
             get_item: { item: { 'data' => sample_packed_data } },
-            update_item: { attributes: { created_at: 'now' } }
+            update_item: { attributes: { created_at: 'now' } },
+            config: double(user_agent_frameworks: [])
           )
         end
 

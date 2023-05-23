@@ -192,9 +192,9 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] DDB client.
     def gen_dynamo_db_client
-      client_opts = { user_agent_suffix: " aws-sessionstore/#{VERSION}" }
-      client = Aws::DynamoDB::Client
-      dynamo_db_client = @options[:dynamo_db_client] || client.new(client_opts)
+      dynamo_db_client = @options[:dynamo_db_client] || Aws::DynamoDB::Client.new
+      # this used to be aws-sessionstore/version on user_agent_suffix
+      dynamo_db_client.config.user_agent_frameworks << "aws-sessionstore-dynamodb"
       {:dynamo_db_client => dynamo_db_client}
     end
 
