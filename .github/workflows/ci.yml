@@ -29,4 +29,4 @@ jobs:
         run: bundle install --without docs
 
       - name: Test
-        run: bundle exec rake release:test
+        run: bundle exec rake test:spec
