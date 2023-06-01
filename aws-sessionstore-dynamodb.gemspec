@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  # Require user_agent_frameworks config
-  spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= TODO'
+  # Require 1.85.0 for user_agent_frameworks config
+  spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
   spec.add_dependency 'rack', '~> 2'
 end
