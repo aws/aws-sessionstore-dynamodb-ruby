@@ -26,7 +26,7 @@ describe Aws::SessionStore::DynamoDB do
 
   let(:base_app) { MultiplierApplication.new }
   let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
-  let(:client) { double('Aws::DynamoDB::Client') }
+  let(:client) { double('Aws::DynamoDB::Client', config: double(user_agent_frameworks: [])) }
 
   context 'Error handling for Rack Middleware with default error handler' do
     it 'raises error for missing secret key' do

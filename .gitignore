@@ -3,3 +3,4 @@ coverage
 .yardoc
 Gemfile.lock
 .release
+.idea/
