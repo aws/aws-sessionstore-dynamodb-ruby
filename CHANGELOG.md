@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Issue - Improve User-Agent tracking and bump minimum DynamoDB version.
+* Feature - Improve User-Agent tracking and bump minimum DynamoDB version.
 
 2.0.1 (2020-11-16)
 ------------------
