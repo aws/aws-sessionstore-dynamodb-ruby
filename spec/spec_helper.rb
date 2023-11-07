@@ -60,11 +60,17 @@ end
 RSpec.configure do |c|
   c.raise_errors_for_deprecations!
   c.before(:each, integration: true) do
-    opts = { table_name: 'sessionstore-integration-test' }
+    options = {
+      endpoint:
+        'http://localhost:8000'
+    }
+    dynamo_db_client = Aws::DynamoDB::Client.new(options)
+    opts = { table_name: 'sessionstore-integration-test', dynamo_db_client: dynamo_db_client }
 
     defaults = Aws::SessionStore::DynamoDB::Configuration::DEFAULTS
     defaults = defaults.merge(opts)
     stub_const('Aws::SessionStore::DynamoDB::Configuration::DEFAULTS', defaults)
+
     Aws::SessionStore::DynamoDB::Table.create_table(opts)
   end
 end

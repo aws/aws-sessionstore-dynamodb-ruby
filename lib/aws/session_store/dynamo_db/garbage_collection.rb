@@ -77,8 +77,8 @@ module Aws::SessionStore::DynamoDB
       opts = {}
       opts[:request_items] = {config.table_name => sub_batch}
       begin
-        response = config.dynamo_db_client.batch_write_item(opts)
-        opts[:request_items] = response.unprocessed_items
+        response = config.dynamo_db_client.batch_write_item(**opts)
+        opts[:request_items] = response[:unprocessed_items]
       end until opts[:request_items].empty?
     end
 
