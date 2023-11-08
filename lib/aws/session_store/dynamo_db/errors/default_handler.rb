@@ -5,7 +5,6 @@ module Aws::SessionStore::DynamoDB::Errors
     HARD_ERRORS = [
       Aws::DynamoDB::Errors::ResourceNotFoundException,
       Aws::DynamoDB::Errors::ConditionalCheckFailedException,
-      Aws::SessionStore::DynamoDB::MissingSecretKeyError,
       Aws::SessionStore::DynamoDB::LockWaitTimeoutError
     ]
 

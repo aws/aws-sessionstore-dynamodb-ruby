@@ -13,13 +13,24 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # @return [Hash] Options for getting session.
     def get_session_opts(sid)
-      merge_all(table_opts(sid), attr_opts)
+      {
+        table_name: @config.table_name,
+        key: {
+          @config.table_key => sid
+        },
+        attributes_to_get: [ "data" ],
+        consistent_read: @config.consistent_read
+      }
     end
 
     # @return [String] Session data.
     def extract_data(env, result = nil)
-      env['rack.initial_data'] = result[:item]["data"] if result[:item]
-      unpack_data(result[:item]["data"]) if result[:item] && result[:item].has_key?("data")
+      if result[:item] && result[:item].has_key?("data")
+        env['rack.initial_data'] = result[:item]["data"]
+        unpack_data(result[:item]["data"])
+      else
+        nil
+      end
     end
 
   end

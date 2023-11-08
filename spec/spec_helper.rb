@@ -24,11 +24,18 @@ end
 $LOAD_PATH << File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 
 require 'rspec'
+require 'active_support'
+require 'action_dispatch'
 require 'aws-sessionstore-dynamodb'
 require 'rack/test'
+require 'debug'
 
 # Default Rack application
 class MultiplierApplication
+  def initialize(app, options = {})
+    @app = app
+  end
+
   def call(env)
     if env['rack.session'][:multiplier]
       env['rack.session'][:multiplier] *= 2
@@ -36,6 +43,30 @@ class MultiplierApplication
       env['rack.session'][:multiplier] = 1
     end
     [200, { 'Content-Type' => 'text/plain' }, ['All good!']]
+  end
+end
+
+class RoutedRackApp
+  attr_reader :routes
+
+  def self.build(options)
+    self.new(ActionDispatch::Routing::RouteSet.new) do |middleware|
+      middleware.use ActionDispatch::DebugExceptions
+      middleware.use ActionDispatch::Callbacks
+      middleware.use ActionDispatch::Cookies
+      middleware.use ActionDispatch::Flash
+      middleware.use Aws::SessionStore::DynamoDB::RackMiddleware, options
+      middleware.use MultiplierApplication
+    end
+  end
+
+  def initialize(routes, &blk)
+    @routes = routes
+    @stack = ActionDispatch::MiddlewareStack.new(&blk).build(@routes)
+  end
+
+  def call(env)
+    @stack.call(env)
   end
 end
 
@@ -52,9 +83,7 @@ ConstantHelpers = lambda do
   end
   let(:client_error_msg) { 'Unrecognized Client.'}
   let(:invalid_cookie) { { 'HTTP_COOKIE' => 'rack.session=ApplePieBlueberries' } }
-  let(:invalid_session_data) { { 'rack.session' => { 'multiplier' => 1 } } }
   let(:rack_default_error_msg) { "Warning! Aws::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
-  let(:missing_key_error) { Aws::SessionStore::DynamoDB::MissingSecretKeyError }
 end
 
 RSpec.configure do |c|

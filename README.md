@@ -84,34 +84,6 @@ garbage collection similar to below:
 The above example will clear sessions older than one day or that have been
 stale for longer than an hour.
 
-### Locking Strategy
-
-You may want the Session Store to implement the provided pessimistic locking
-strategy if you are concerned about concurrency issues with session accesses.
-By default, locking is not implemented for the session store. You must trigger
-the locking strategy through the configuration of the session store. Pessimistic
-locking, in this case, means that only one read can be made on a session at
-once. While the session is being read by the process with the lock, other
-processes may try to obtain a lock on the same session but will be blocked.
-
-Locking is expensive and will drive up costs depending on how it is used.
-Without locking, one read and one write are performed per request for session
-data manipulation. If a locking strategy is implemented, as many as the total
-maximum wait time divided by the lock retry delay writes to the database.
-Keep these considerations in mind if you plan to enable locking.
-
-#### Configuration for Locking
-
-The following configuration options will allow you to configure the pessimistic
-locking strategy according to your needs:
-
-    options = {
-      :enable_locking => true,
-      :lock_expiry_time => 500,
-      :lock_retry_delay => 500,
-      :lock_max_wait_time => 1
-    }
-
 ### Error Handling
 
 You can pass in your own error handler for raised exceptions or you can allow

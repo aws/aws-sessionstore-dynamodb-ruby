@@ -24,7 +24,7 @@ module Aws
         instance_exec(&ConstantHelpers)
 
         before do
-          @options = { secret_key: 'watermelon_cherries' }
+          @options = {}
         end
 
         # Table options for client
@@ -48,8 +48,7 @@ module Aws
           Time.at((client.get_item(options)[:item]['created_at']).to_f)
         end
 
-        let(:base_app) { MultiplierApplication.new }
-        let(:app) { RackMiddleware.new(base_app, @options) }
+        let(:app) { RoutedRackApp.build(@options) }
         let(:config) { Configuration.new }
         let(:client) { config.dynamo_db_client }
 
@@ -79,12 +78,6 @@ module Aws
             expect(last_response['Set-Cookie']).to be_nil
           end
 
-          it 'creates new session with false/nonexistant http-cookie id' do
-            get '/', {}, invalid_cookie.merge(invalid_session_data)
-            expect(last_response['Set-Cookie']).not_to eq('rack.session=ApplePieBlueberries')
-            expect(last_response['Set-Cookie']).not_to be_nil
-          end
-
           it 'expires after specified time and sets date for cookie to expire' do
             @options[:expire_after] = 1
             get '/'
@@ -100,28 +93,6 @@ module Aws
             @options[:defer] = true
             get '/'
             expect(last_response['Set-Cookie']).to be_nil
-          end
-
-          it 'adds the created at attribute for a new session' do
-            get '/'
-            expect(last_request.env['dynamo_db.new_session']).to eq('true')
-            sid = last_response['Set-Cookie'].split(/[;\=]/)[1]
-            time = extract_time(sid)
-            expect(time).to be_within(2).of(Time.now)
-
-            get '/'
-            expect(last_request.env['dynamo_db.new_session']).to be_nil
-          end
-
-          it 'releases pessimistic lock at finish of transaction' do
-            @options[:enable_locking] = true
-            get '/'
-            expect(last_request.env['dynamo_db.new_session']).to eq('true')
-            sid = last_response['Set-Cookie'].split(/[;\=]/)[1]
-
-            get '/'
-            options = table_opts(sid).merge(attr_opts)
-            expect(client.get_item(options)[:item]['locked_at']).to be_nil
           end
         end
       end

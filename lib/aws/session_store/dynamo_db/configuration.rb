@@ -23,14 +23,6 @@ module Aws::SessionStore::DynamoDB
   # :error_handler as a cofniguration object. You must implement the BaseErrorHandler class.
   # @see BaseHandler Interface for Error Handling for DynamoDB Session Store.
   #
-  # == Locking Strategy
-  # By default, locking is not implemented for the session store. You must trigger the
-  # locking strategy through the configuration of the session store. Pessimistic locking,
-  # in this case, means that only one read can be made on a session at once. While the session
-  # is being read by the process with the lock, other processes may try to obtain a lock on
-  # the same session but will be blocked. See the accessors with lock in their name for
-  # how to configure the pessimistic locking strategy to your needs.
-  #
   # == DynamoDB Specific Options
   # You may configure the table name and table hash key value of your session table with
   # the :table_name and :table_key options. You may also configure performance options for
@@ -52,8 +44,7 @@ module Aws::SessionStore::DynamoDB
       :enable_locking => false,
       :lock_expiry_time => 500,
       :lock_retry_delay => 500,
-      :lock_max_wait_time => 1,
-      :secret_key => nil
+      :lock_max_wait_time => 1
     }
 
     ### Feature options
@@ -93,26 +84,6 @@ module Aws::SessionStore::DynamoDB
     # @return [Integer] Maximum number of seconds
     #   before the current time that the session was last accessed.
     attr_reader :max_stale
-
-    # @return [true] Pessimistic locking strategy will be implemented for
-    #   all session accesses.
-    # @return [false] No locking strategy will be implemented for
-    #   all session accesses.
-    attr_reader :enable_locking
-
-    # @return [Integer] Time in milleseconds after which lock will expire.
-    attr_reader :lock_expiry_time
-
-    # @return [Integer] Time in milleseconds to wait before retrying to obtain
-    #   lock once an attempt to obtain lock has been made and has failed.
-    attr_reader :lock_retry_delay
-
-    # @return [Integer] Maximum time in seconds to wait to acquire lock
-    #   before giving up.
-    attr_reader :lock_max_wait_time
-
-    # @return [String] The secret key for HMAC encryption.
-    attr_reader :secret_key
 
     # @return [String,Pathname]
     attr_reader :config_file
@@ -159,20 +130,6 @@ module Aws::SessionStore::DynamoDB
     #   from the current time that a session was created.
     # @option options [Integer] :max_stale (nil) Maximum number of seconds
     #   before current time that session was last accessed.
-    # @option options [String] :secret_key (nil) Secret key for HMAC encription.
-    # @option options [Integer] :enable_locking (false) If true, a pessimistic
-    #   locking strategy will be implemented for all session accesses.
-    #   If false, no locking strategy will be implemented for all session
-    #   accesses.
-    # @option options [Integer] :lock_expiry_time (500) Time in milliseconds
-    #   after which lock expires on session.
-    # @option options [Integer] :lock_retry_delay (500) Time in milleseconds to
-    #   wait before retrying to obtain lock once an attempt to obtain lock
-    #   has been made and has failed.
-    # @option options [Integer] :lock_max_wait_time (500) Maximum time
-    #   in seconds to wait to acquire lock before giving up.
-    # @option options [String] :secret_key (SecureRandom.hex(64))
-    #   Secret key for HMAC encription.
     def initialize(options = {})
       @options = default_options.merge(
         env_options.merge(

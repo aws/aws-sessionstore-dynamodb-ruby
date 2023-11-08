@@ -13,8 +13,14 @@ module Aws::SessionStore::DynamoDB::Locking
       return false if session.empty?
       packed_session = pack_data(session)
       handle_error(env) do
-        save_opts = update_opts(env, sid, packed_session, options)
-        @config.dynamo_db_client.update_item(save_opts)
+        if env['dynamo_db.new_session']
+          save_options = save_new_opts(env, sid, packed_session)
+          @config.dynamo_db_client.put_item(save_options)
+          env.delete('dynamo_db.new_session')
+        else
+          save_options = save_exists_opts(env, sid, packed_session, options)
+          @config.dynamo_db_client.update_item(save_options)
+        end
         sid
       end
     end
@@ -51,31 +57,58 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # @return [Hash] Options for deleting session.
     def delete_opts(sid)
-      table_opts(sid)
-    end
-
-    # @return [Hash] Options for updating item in Session table.
-    def update_opts(env, sid, session, options = {})
-      if env['dynamo_db.new_session']
-        updt_options = save_new_opts(env, sid, session)
-      else
-        updt_options = save_exists_opts(env, sid, session, options)
-      end
-      updt_options
+      {
+        table_name: @config.table_name,
+        key: {
+          @config.table_key => sid
+        }
+      }
     end
 
     # @return [Hash] Options for saving a new session in database.
     def save_new_opts(env, sid, session)
-      attribute_opts = attr_updts(env, session, created_attr)
-      merge_all(table_opts(sid), attribute_opts)
+      {
+        table_name: @config.table_name,
+        item: {
+           @config.table_key => sid,
+           data: session.to_s,
+           created_at: created_at,
+           updated_at: updated_at,
+           expire_at: expire_at
+        },
+        condition_expression: "attribute_not_exists(#{@config.table_key})"
+      }
     end
 
     # @return [Hash] Options for saving an existing sesison in the database.
     def save_exists_opts(env, sid, session, options = {})
-      add_attr = options[:add_attrs] || {}
-      expected = options[:expect_attr] || {}
-      attribute_opts = merge_all(attr_updts(env, session, add_attr), expected)
-      merge_all(table_opts(sid), attribute_opts)
+      data = if data_unchanged?(env, session)
+        {}
+      else
+        {
+          data: {
+            value: session.to_s,
+            action: 'PUT'
+          }
+        }
+      end
+      {
+        table_name: @config.table_name,
+        key: {
+          @config.table_key => sid
+        },
+        attribute_updates: {
+          updated_at: {
+            value: updated_at,
+            action: 'PUT'
+          },
+          expire_at: {
+            value: expire_at,
+            action: 'PUT'
+          }
+        }.merge(data),
+        return_values: 'UPDATED_NEW'
+      }
     end
 
     # Unmarshal the data.
@@ -83,72 +116,23 @@ module Aws::SessionStore::DynamoDB::Locking
       Marshal.load(packed_data.unpack("m*").first)
     end
 
-    # Table options for client.
-    def table_opts(sid)
-      {
-        :table_name => @config.table_name,
-        :key => { @config.table_key => sid }
-      }
-    end
-
-    # Attributes to update via client.
-    def attr_updts(env, session, add_attrs = {})
-      data = data_unchanged?(env, session) ? {} : data_attr(session)
-      {
-        attribute_updates: merge_all(updated_attr, data, add_attrs, expire_attr),
-        return_values: 'UPDATED_NEW'
-      }
-    end
-
-    # Update client with current time attribute.
     def updated_at
-      { :value => (Time.now).to_f, :action  => "PUT" }
+      Time.now.to_f
     end
 
-    # Attribute for creation of session.
-    def created_attr
-      { "created_at" => updated_at }
+    def created_at
+      updated_at
     end
 
-    # Update client with current time + max_stale.
     def expire_at
       max_stale = @config.max_stale || 0
-      { value: (Time.now + max_stale).to_i, action: 'PUT' }
-    end
-
-    # Attribute for TTL expiration of session.
-    def expire_attr
-      { 'expire_at' => expire_at }
-    end
-
-    # Attribute for updating session.
-    def updated_attr
-      {
-        "updated_at" => updated_at
-      }
-    end
-
-    def data_attr(session)
-       { "data" => {:value => session, :action  => "PUT"} }
+      (Time.now + max_stale).to_i
     end
 
     # Determine if data has been manipulated
     def data_unchanged?(env, session)
       return false unless env['rack.initial_data']
       env['rack.initial_data'] == session
-    end
-
-    # Attributes to be retrieved via client
-    def attr_opts
-      {:attributes_to_get => ["data"],
-      :consistent_read => @config.consistent_read}
-    end
-
-    # @return [Hash] merged hash of all hashes passed in.
-    def merge_all(*hashes)
-      new_hash = {}
-      hashes.each{|hash| new_hash.merge!(hash)}
-      new_hash
     end
   end
 end
