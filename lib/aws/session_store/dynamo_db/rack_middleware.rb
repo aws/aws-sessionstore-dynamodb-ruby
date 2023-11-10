@@ -37,6 +37,7 @@ module Aws::SessionStore::DynamoDB
     end
 
     def write_session(req, sid, session, options)
+      sid = generate_sid if sid.nil? || !sid.respond_to?(:private_id)
       @lock.set_session_data(req.env, sid.private_id, session, options)
       sid
     end
