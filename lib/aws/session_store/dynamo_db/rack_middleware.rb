@@ -25,7 +25,6 @@ module Aws::SessionStore::DynamoDB
       else
         unless sid and session = @lock.get_session_data(req.env, sid.private_id)
           session = {}
-          sid = generate_unique_sid(req.env, session)
         end
         [sid, session]
       end
