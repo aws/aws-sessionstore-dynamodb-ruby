@@ -40,11 +40,7 @@ module Aws::SessionStore::DynamoDB
       :write_capacity => 5,
       :raise_errors => false,
       # :max_age => 7*3600*24,
-      # :max_stale => 3600*5,
-      :enable_locking => false,
-      :lock_expiry_time => 500,
-      :lock_retry_delay => 500,
-      :lock_max_wait_time => 1
+      # :max_stale => 3600*5
     }
 
     ### Feature options
