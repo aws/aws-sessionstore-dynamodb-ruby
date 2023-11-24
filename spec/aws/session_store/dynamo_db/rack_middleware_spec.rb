@@ -51,7 +51,8 @@ module Aws
             list_tables: { table_names: ['Sessions'] },
             get_item: { item: { 'data' => sample_packed_data } },
             put_item: { attributes: { created_at: 'now' } },
-            update_item: { attributes: { updated_at: 'now' } }
+            update_item: { attributes: { updated_at: 'now' } },
+            config: double(user_agent_frameworks: [])
           )
         end
 

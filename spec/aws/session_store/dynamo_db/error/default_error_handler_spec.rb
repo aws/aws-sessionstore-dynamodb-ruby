@@ -25,7 +25,7 @@ describe Aws::SessionStore::DynamoDB do
   end
 
   let(:app) { RoutedRackApp.build(@options) }
-  let(:client) { double('Aws::DynamoDB::Client') }
+  let(:client) { double('Aws::DynamoDB::Client', config: double(user_agent_frameworks: [])) }
 
   context 'Error handling for Rack Middleware with default error handler' do
     it 'catches exception for inaccurate table name and raises error ' do

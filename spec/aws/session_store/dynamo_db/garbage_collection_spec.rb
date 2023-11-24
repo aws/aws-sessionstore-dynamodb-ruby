@@ -124,9 +124,9 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
       expect(dynamo_db_client).to receive(:scan).
         exactly(1).times.and_return(scan_resp3)
       expect(dynamo_db_client).to receive(:batch_write_item).ordered.
-        with(request_items: { 'sessions' => format_scan_result }).
+        with({request_items: { 'sessions' => format_scan_result }}).
         and_return(write_resp2)
-      expect(dynamo_db_client).to receive(:batch_write_item).ordered.with(
+      expect(dynamo_db_client).to receive(:batch_write_item).ordered.with({
         request_items: {
           'sessions' => [
             {
@@ -151,7 +151,7 @@ describe Aws::SessionStore::DynamoDB::GarbageCollection do
             }
           ]
         }
-      ).and_return(write_resp1)
+      }).and_return(write_resp1)
       collect_garbage
     end
   end

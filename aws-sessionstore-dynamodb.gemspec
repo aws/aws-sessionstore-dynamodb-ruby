@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'aws-sdk-dynamodb', '~> 1'
+  spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
   spec.add_dependency('actionpack', '>= 6.1')
   spec.add_dependency 'rack', '~> 3'
   spec.add_dependency 'rack-session', '>= 2.0.0'
