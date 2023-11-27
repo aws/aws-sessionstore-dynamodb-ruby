@@ -28,7 +28,6 @@ require 'active_support'
 require 'action_dispatch'
 require 'aws-sessionstore-dynamodb'
 require 'rack/test'
-require 'debug'
 
 # Default Rack application
 class MultiplierApplication
