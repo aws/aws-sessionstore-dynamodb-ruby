@@ -10,7 +10,6 @@ group :docs do
 end
 
 group :test do
-  gem 'debug'
   gem 'rspec'
   gem 'simplecov', require: false
   gem 'rack-test'
