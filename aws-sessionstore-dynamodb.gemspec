@@ -19,5 +19,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency('actionpack', '>= 6.1')
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
   spec.add_dependency 'rack', '>= 2.0.8', '< 4'
-  spec.add_dependency 'rack-session', '>= 2.0.0'
+  spec.add_dependency 'rack-session', '>= 1.0.1'
 end
