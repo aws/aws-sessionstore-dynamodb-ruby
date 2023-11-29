@@ -23,11 +23,29 @@ module Aws::SessionStore::DynamoDB
       if req.session.options[:skip]
         [generate_sid, {}]
       else
-        unless sid and session = @lock.get_session_data(req.env, sid.private_id)
+        session = find_session_data(req, sid)
+        unless session
           session = {}
           sid = generate_unique_sid(req.env, session)
         end
         [sid, session]
+      end
+    end
+
+    # Generate HMAC hash based on MD5
+    def generate_hmac(sid, secret)
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest::MD5.new, secret, sid).strip()
+    end
+
+    # Get session data from DynamoDB.
+    def find_session_data(req, sid)
+      return nil unless sid
+      digest, ver_sid  = sid.public_id.split("--")
+      if ver_sid && @config.secret_key && digest == generate_hmac(ver_sid, @config.secret_key)
+        # Legacy session id format
+        @lock.get_session_data(req.env, sid.public_id)
+      else
+        @lock.get_session_data(req.env, sid.private_id)
       end
     end
 
