@@ -43,6 +43,7 @@ module Aws::SessionStore::DynamoDB
 
     def get_session_id_with_fallback(sid)
       return nil unless sid
+
       digest, ver_sid = sid.public_id.split('--')
       if ver_sid && @config.secret_key && digest == generate_hmac(ver_sid, @config.secret_key)
         # Legacy session id format
@@ -53,7 +54,6 @@ module Aws::SessionStore::DynamoDB
     end
 
     def write_session(req, sid, session, options)
-      sid = generate_sid if sid.nil?
       @lock.set_session_data(req.env, get_session_id_with_fallback(sid), session, options)
       sid
     end
