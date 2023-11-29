@@ -23,7 +23,7 @@ Run the session store as a Rack middleware in the following way:
     use Aws::SessionStore::DynamoDB::RackMiddleware.new(options)
     run SomeRackApp
 
-Note that `:secret_key` is a mandatory configuration option that must be set.
+Note that `:secret_key` is a configuration option that is used for the older version.
 
 ## Detailed Usage
 

@@ -4,7 +4,8 @@ module Aws::SessionStore::DynamoDB::Errors
     # Array of errors that will always be passed up the Rack stack.
     HARD_ERRORS = [
       Aws::DynamoDB::Errors::ResourceNotFoundException,
-      Aws::DynamoDB::Errors::ConditionalCheckFailedException
+      Aws::DynamoDB::Errors::ConditionalCheckFailedException,
+      Aws::SessionStore::DynamoDB::MissingSecretKeyError
     ]
 
     # Determines behavior of DefaultErrorHandler

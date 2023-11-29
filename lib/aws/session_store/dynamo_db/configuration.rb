@@ -40,7 +40,8 @@ module Aws::SessionStore::DynamoDB
       :write_capacity => 5,
       :raise_errors => false,
       # :max_age => 7*3600*24,
-      # :max_stale => 3600*5
+      # :max_stale => 3600*5,
+      :secret_key => nil
     }
 
     ### Feature options
@@ -80,6 +81,9 @@ module Aws::SessionStore::DynamoDB
     # @return [Integer] Maximum number of seconds
     #   before the current time that the session was last accessed.
     attr_reader :max_stale
+
+    # @return [String] The secret key for HMAC encryption of legacy sid.
+    attr_reader :secret_key
 
     # @return [String,Pathname]
     attr_reader :config_file
@@ -126,6 +130,8 @@ module Aws::SessionStore::DynamoDB
     #   from the current time that a session was created.
     # @option options [Integer] :max_stale (nil) Maximum number of seconds
     #   before current time that session was last accessed.
+    # @option options [String] :secret_key (SecureRandom.hex(64))
+    #   Secret key for HMAC encription.
     def initialize(options = {})
       @options = default_options.merge(
         env_options.merge(

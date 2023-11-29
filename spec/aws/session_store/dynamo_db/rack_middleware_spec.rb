@@ -35,10 +35,12 @@ module Aws
 
         before do
           @options = {
-            dynamo_db_client: dynamo_db_client
+            dynamo_db_client: dynamo_db_client,
+            secret_key: secret_key
           }
         end
 
+        let(:secret_key) { 'watermelon_cherries' }
         let(:app) { RoutedRackApp.build(@options) }
         let(:sample_packed_data) do
           [Marshal.dump('multiplier' => 1)].pack('m*')
@@ -138,6 +140,30 @@ module Aws
             session_cookie = last_response['Set-Cookie']
 
             get '/', { 'HTTP_Cookie' => session_cookie }
+          end
+        end
+
+        describe 'Legacy session id format' do
+          let(:legacy_session_id) do
+            sid = SecureRandom.hex(16)
+            sid.encode!(Encoding::UTF_8)
+            "#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('MD5'), secret_key, sid).strip}--" + sid
+          end
+
+          it 'loads/manipulates a session based on legacy session id' do
+            expect(dynamo_db_client).to receive(:get_item).with(
+              {
+                :attributes_to_get => ["data"],
+                :consistent_read => true,
+                :key => {
+                  "session_id" => legacy_session_id
+                },
+                :table_name=>"sessions"
+              }
+            )
+            set_cookie("_session_id=#{legacy_session_id}; path=/; httponly")
+            get '/'
+            expect(last_request.session.to_hash).to eq('multiplier' => 2)
           end
         end
       end
