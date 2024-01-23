@@ -1,6 +1,12 @@
-doc
-coverage
-.yardoc
-Gemfile.lock
-.release
+.DS_Store
+
+/.byebug_history
+/.bundle
+/.yardoc
+/doc
+/Gemfile.lock
+/coverage
+*.gem
+/.release
+
 .idea/
