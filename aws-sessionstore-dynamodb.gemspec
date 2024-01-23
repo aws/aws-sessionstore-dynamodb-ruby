@@ -19,4 +19,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
   spec.add_dependency 'rack', '>= 2', '< 4'
   spec.add_dependency 'rack-session', '>= 1', '< 3'
+
+  spec.required_ruby_version = '>= 2.5'
 end
