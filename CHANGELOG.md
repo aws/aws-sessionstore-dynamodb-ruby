@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - Relax `rack` dependency to allow version 3. Adds `rack-session` to the gemspec.
+
 2.1.0 (2023-06-02)
 ------------------
 
