@@ -23,7 +23,13 @@ module Aws
       describe Table do
         context 'Mock Table Methods Tests', integration: true do
           let(:table_name) { "sessionstore-integration-test-#{Time.now.to_i}" }
-          let(:options) { { table_name: table_name } }
+          let(:dynamo_db_client) {
+            options = {
+              endpoint: 'http://localhost:8000'
+            }
+            Aws::DynamoDB::Client.new(options)
+          }
+          let(:options) { { table_name: table_name, dynamo_db_client: dynamo_db_client } }
           let(:io) { StringIO.new }
 
           before { allow(Table).to receive(:logger) { Logger.new(io) } }

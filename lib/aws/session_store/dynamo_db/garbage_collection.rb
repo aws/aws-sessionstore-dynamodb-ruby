@@ -77,7 +77,7 @@ module Aws::SessionStore::DynamoDB
       opts = {}
       opts[:request_items] = {config.table_name => sub_batch}
       begin
-        response = config.dynamo_db_client.batch_write_item(opts)
+        response = config.dynamo_db_client.batch_write_item(**opts)
         opts[:request_items] = response[:unprocessed_items]
       end until opts[:request_items].empty?
     end
@@ -101,7 +101,7 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def oldest_date(sec)
       hash = {}
-      hash[:attribute_value_list] = [:n => "#{((Time.now - sec).to_f)}"]
+      hash[:attribute_value_list] = [(Time.now - sec).to_f]
       hash[:comparison_operator] = 'LT'
       hash
     end

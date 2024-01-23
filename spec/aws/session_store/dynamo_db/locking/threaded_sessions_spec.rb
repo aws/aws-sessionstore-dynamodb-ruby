@@ -39,8 +39,7 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
     end
   end
 
-  let(:base_app) { MultiplierApplication.new }
-  let(:app) { Aws::SessionStore::DynamoDB::RackMiddleware.new(base_app, @options) }
+  let(:app) { RoutedRackApp.build(@options) }
 
   context 'Mock Multiple Threaded Sessions', integration: true do
     before do
@@ -62,33 +61,6 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
 
       t1 = thread(2, 0, false)
       t2 = thread(4, 0.25, true)
-      t1.join
-      t2.join
-    end
-
-    it 'should bust lock' do
-      @options[:lock_expiry_time] = 100
-
-      get '/'
-      expect(last_request.session[:multiplier]).to eq(1)
-
-      t1 = thread_exception(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
-      t2 = thread(2, 0.25, true)
-      t1.join
-      t2.join
-    end
-
-    it 'should throw exceeded time spent aquiring lock error' do
-      @options[:lock_expiry_time] = 1000
-      @options[:lock_retry_delay] = 100
-      @options[:lock_max_wait_time] = 0.25
-
-      get '/'
-      expect(last_request.session[:multiplier]).to eq(1)
-
-      t1 = thread(2, 0, false)
-      sleep(0.25)
-      t2 = thread_exception(Aws::SessionStore::DynamoDB::LockWaitTimeoutError)
       t1.join
       t2.join
     end

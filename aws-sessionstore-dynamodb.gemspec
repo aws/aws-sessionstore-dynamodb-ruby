@@ -16,6 +16,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Require 1.85.0 for user_agent_frameworks config
+  spec.add_dependency('actionpack', '>= 6.1')
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
-  spec.add_dependency 'rack', '~> 2'
+  spec.add_dependency 'rack', '>= 2.0.8', '< 4'
+  spec.add_dependency 'rack-session', '>= 1.0.1'
 end
