@@ -13,13 +13,8 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-begin
-  if ENV['COVERAGE']
-    require 'simplecov'
-    SimpleCov.start { add_filter 'spec' }
-  end
-rescue LoadError
-end
+require 'simplecov'
+SimpleCov.start { add_filter 'spec' }
 
 $LOAD_PATH << File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 

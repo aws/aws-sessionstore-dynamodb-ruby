@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+if ENV['RACK2']
+  gem 'rack', '~> 2'
+end
+
 gemspec
 
 gem 'rake', require: false
@@ -11,8 +15,8 @@ end
 
 group :test do
   gem 'rspec'
-  gem 'simplecov', require: false
   gem 'rack-test'
+  gem 'simplecov'
 
   if RUBY_VERSION >= '3.0'
     gem 'rexml'

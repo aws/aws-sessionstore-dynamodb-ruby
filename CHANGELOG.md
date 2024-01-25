@@ -1,6 +1,10 @@
 Unreleased Changes
 ------------------
 
+* Feature - Drop support for Ruby 2.3 and 2.4.
+
+* Issue - Relax `rack` dependency to allow version 3. Adds `rack-session` to the gemspec.
+
 2.1.0 (2023-06-02)
 ------------------
 
