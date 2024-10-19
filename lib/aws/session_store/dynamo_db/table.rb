@@ -11,25 +11,21 @@ module Aws::SessionStore::DynamoDB
       # @option (see Configuration#initialize)
       def create_table(options = {})
         config = load_config(options)
-        client = config.dynamo_db_client
-        table_name = config.table_name
-        client.create_table(create_opts(config))
-        logger.info "Table #{table_name} created, waiting for activation..."
-        client.wait_until(:table_exists, table_name: table_name)
-        logger.info "Table #{table_name} is now ready to use."
+        config.dynamo_db_client.create_table(create_opts(config))
+        logger.info "Table #{config.table_name} created, waiting for activation..."
+        config.dynamo_db_client.wait_until(:table_exists, table_name: config.table_name)
+        logger.info "Table #{config.table_name} is now ready to use."
       rescue Aws::DynamoDB::Errors::ResourceInUseException
-        logger.warn "Table #{table_name} already exists, skipping creation."
+        logger.warn "Table #{config.table_name} already exists, skipping creation."
       end
 
       # Deletes a session table.
       # @option (see Configuration#initialize)
       def delete_table(options = {})
         config = load_config(options)
-        client = config.dynamo_db_client
-        table_name = config.table_name
-        client.delete_table(table_name: table_name)
-        client.wait_until(:table_not_exists, table_name: table_name)
-        logger.info "Table #{table_name} deleted."
+        config.dynamo_db_client.delete_table(table_name: config.table_name)
+        config.dynamo_db_client.wait_until(:table_not_exists, table_name: config.table_name)
+        logger.info "Table #{config.table_name} deleted."
       end
 
       private
