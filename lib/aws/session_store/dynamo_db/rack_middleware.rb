@@ -12,14 +12,12 @@ module Aws::SessionStore::DynamoDB
     #
     # @param app Rack application.
     # @option (see Configuration#initialize)
-    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If valid table
-    #   name is not provided.
-    # @raise [Aws::SessionStore::DynamoDB::MissingSecretKey] If secret key is
-    #   not provided.
+    # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If a valid table name is not provided.
+    # @raise [Aws::SessionStore::DynamoDB::MissingSecretKey] If a secret key is not provided.
     def initialize(app, options = {})
       super
       @config = Configuration.new(options)
-      set_locking_strategy
+      @session = Session.new(@config)
     end
 
     # @return [Configuration] An instance of Configuration that is used for
@@ -27,18 +25,6 @@ module Aws::SessionStore::DynamoDB
     attr_reader :config
 
     private
-
-    # Sets locking strategy for session handler
-    #
-    # @return [Locking::Null] If locking is not enabled.
-    # @return [Locking::Pessimistic] If locking is enabled.
-    def set_locking_strategy
-      @lock = if @config.enable_locking
-                Aws::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
-              else
-                Aws::SessionStore::DynamoDB::Locking::Null.new(@config)
-              end
-    end
 
     # Determines if the correct session table name is being used for
     # this application. Also tests existence of secret key.
@@ -59,7 +45,7 @@ module Aws::SessionStore::DynamoDB
         handle_error { raise InvalidIDError }
         set_new_session_properties(req.env)
       else
-        data = @lock.get_session_data(req.env, sid)
+        data = @session.get_session_data(req.env, sid)
         [sid, data || {}]
       end
     end
@@ -74,14 +60,14 @@ module Aws::SessionStore::DynamoDB
     # @return [Hash] If session has been saved.
     # @return [false] If session has could not be saved.
     def write_session(req, sid, session, options)
-      @lock.set_session_data(req.env, sid, session, options)
+      @session.set_session_data(req.env, sid, session, options)
     end
 
     # Destroys session and removes session from database.
     #
     # @return [String] return a new session id or nil if options[:drop]
     def delete_session(req, sid, options)
-      @lock.delete_session(req.env, sid)
+      @session.delete_session(req.env, sid)
       generate_sid unless options[:drop]
     end
 

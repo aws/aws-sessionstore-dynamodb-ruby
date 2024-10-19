@@ -21,10 +21,6 @@ describe Aws::SessionStore::DynamoDB::Configuration do
       raise_errors: true,
       max_age: 7 * 60,
       max_stale: 7,
-      enable_locking: true,
-      lock_expiry_time: 1000,
-      lock_retry_delay: 1000,
-      lock_max_wait_time: 2,
       secret_key: 'SecretKey'
     }
   end

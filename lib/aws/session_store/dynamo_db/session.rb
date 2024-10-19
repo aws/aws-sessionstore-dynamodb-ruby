@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-module Aws::SessionStore::DynamoDB::Locking
-  # This class provides a framework for implementing
-  # locking strategies.
-  class Base
+module Aws::SessionStore::DynamoDB
+  # Handles session management.
+  class Session
     # Creates configuration object.
     def initialize(cfg)
       @config = cfg
@@ -28,7 +27,11 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Gets session data.
     def get_session_data(env, sid)
-      raise NotImplementedError
+      handle_error(env) do
+        result = @config.dynamo_db_client.get_item(merge_all(table_opts(sid), attr_opts))
+        env['rack.initial_data'] = result[:item]['data'] if result[:item]
+        unpack_data(result[:item]['data']) if result[:item]
+      end
     end
 
     # Deletes session based on id

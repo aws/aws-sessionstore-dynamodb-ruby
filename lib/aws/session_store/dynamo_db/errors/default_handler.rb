@@ -7,13 +7,13 @@ module Aws::SessionStore::DynamoDB::Errors
     HARD_ERRORS = [
       Aws::DynamoDB::Errors::ResourceNotFoundException,
       Aws::DynamoDB::Errors::ConditionalCheckFailedException,
-      Aws::SessionStore::DynamoDB::MissingSecretKeyError,
-      Aws::SessionStore::DynamoDB::LockWaitTimeoutError
+      Aws::SessionStore::DynamoDB::MissingSecretKeyError
     ].freeze
 
     # Determines behavior of DefaultErrorHandler
     # @param [true] raise_errors Pass all errors up the Rack stack.
     def initialize(raise_errors)
+      super()
       @raise_errors = raise_errors
     end
 
