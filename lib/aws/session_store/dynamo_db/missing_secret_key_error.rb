@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Aws::SessionStore::DynamoDB
   class MissingSecretKeyError < RuntimeError
-    def initialize(msg = "No secret key provided!")
+    def initialize(msg = 'No secret key provided!')
       super
     end
   end

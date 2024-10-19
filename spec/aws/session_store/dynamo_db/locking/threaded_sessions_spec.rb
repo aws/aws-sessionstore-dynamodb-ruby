@@ -31,12 +31,8 @@ describe Aws::SessionStore::DynamoDB::RackMiddleware do
   end
 
   def update_item_mock(options, update_method)
-    if options[:return_values] == 'UPDATED_NEW' && options.key?(:expected)
-      sleep(0.50)
-      update_method.call(options)
-    else
-      update_method.call(options)
-    end
+    sleep(0.50) if options[:return_values] == 'UPDATED_NEW' && options.key?(:expected)
+    update_method.call(options)
   end
 
   let(:base_app) { MultiplierApplication.new }

@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require 'yaml'
 require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB transactions
-  # by pulling configuration options from Runtime, a YAML file, the ENV and
+  # by pulling configuration options from Runtime, a YAML file, the ENV, and
   # default settings.
   #
   # == Environment Variables
-  # The Configuration object can load default values from your environment. An example
-  # of setting and environment variable is below:
+  # The Configuration object can load default values from your environment.
+  # An example of setting and environment variable is below:
   #
   #   export DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
   #
@@ -38,23 +40,22 @@ module Aws::SessionStore::DynamoDB
   # about these configurations see CreateTable method for Amazon DynamoDB.
   #
   class Configuration
-
     # Default configuration options
     DEFAULTS = {
-      :table_name => "sessions",
-      :table_key => "session_id",
-      :consistent_read => true,
-      :read_capacity => 10,
-      :write_capacity => 5,
-      :raise_errors => false,
+      table_name: 'sessions',
+      table_key: 'session_id',
+      consistent_read: true,
+      read_capacity: 10,
+      write_capacity: 5,
+      raise_errors: false,
       # :max_age => 7*3600*24,
       # :max_stale => 3600*5,
-      :enable_locking => false,
-      :lock_expiry_time => 500,
-      :lock_retry_delay => 500,
-      :lock_max_wait_time => 1,
-      :secret_key => nil
-    }
+      enable_locking: false,
+      lock_expiry_time: 500,
+      lock_retry_delay: 500,
+      lock_max_wait_time: 1,
+      secret_key: nil
+    }.freeze
 
     ### Feature options
 
@@ -194,16 +195,16 @@ module Aws::SessionStore::DynamoDB
     def gen_dynamo_db_client
       dynamo_db_client = @options[:dynamo_db_client] || Aws::DynamoDB::Client.new
       # this used to be aws-sessionstore/version on user_agent_suffix
-      dynamo_db_client.config.user_agent_frameworks << "aws-sessionstore-dynamodb"
-      {:dynamo_db_client => dynamo_db_client}
+      dynamo_db_client.config.user_agent_frameworks << 'aws-sessionstore-dynamodb'
+      { dynamo_db_client: dynamo_db_client }
     end
 
     # @return [Hash] Default Error Handler
     def gen_error_handler
       default_handler = Aws::SessionStore::DynamoDB::Errors::DefaultHandler
       error_handler = @options[:error_handler] ||
-                            default_handler.new(@options[:raise_errors])
-      {:error_handler => error_handler}
+                      default_handler.new(@options[:raise_errors])
+      { error_handler: error_handler }
     end
 
     # @return [Hash] Client and error objects in hash.
@@ -218,10 +219,9 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] Environment options that are useful for Session Handler.
     def env_options
-      default_options.keys.inject({}) do |opts, opt_name|
+      default_options.keys.each_with_object({}) do |opt_name, opts|
         env_var = "DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
         opts[opt_name] = ENV[env_var] if ENV.key?(env_var)
-        opts
       end
     end
 
@@ -237,29 +237,26 @@ module Aws::SessionStore::DynamoDB
 
     # Load options from YAML file
     def load_from_file(file_path)
-      require "erb"
-      opts = YAML.load(ERB.new(File.read(file_path)).result) || {}
+      require 'erb'
+      opts = YAML.safe_load(ERB.new(File.read(file_path)).result) || {}
       symbolize_keys(opts)
     end
 
     # @return [String] Configuration path found in environment or YAML file.
     def config_file_path(options)
-      options[:config_file] || ENV["DYNAMO_DB_SESSION_CONFIG_FILE"]
+      options[:config_file] || ENV.fetch('DYNAMO_DB_SESSION_CONFIG_FILE', nil)
     end
 
     # Set accessible attributes after merged options.
     def set_attributes(options)
-      @options.keys.each do |opt_name|
+      @options.each_key do |opt_name|
         instance_variable_set("@#{opt_name}", options[opt_name])
       end
     end
 
     # @return [Hash] Hash with all symbolized keys.
     def symbolize_keys(options)
-      options.inject({}) do |opts, (opt_name, opt_value)|
-        opts[opt_name.to_sym] = opt_value
-        opts
-      end
+      options.transform_keys(&:to_sym)
     end
   end
 end

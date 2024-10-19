@@ -1,0 +1,19 @@
+# inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - 'tasks/release/**/*'
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 2.5
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/GlobalVars:
+  AllowedVariables:
+    - $VERSION
+    - $REPO_ROOT

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
@@ -12,9 +14,7 @@ module Aws::SessionStore::DynamoDB
     def collect_garbage(options = {})
       config = load_config(options)
       last_key = eliminate_unwanted_sessions(config)
-      while !last_key.empty?
-        last_key = eliminate_unwanted_sessions(config, last_key)
-      end
+      last_key = eliminate_unwanted_sessions(config, last_key) until last_key.empty?
     end
 
     # Loads configuration options.
@@ -30,7 +30,7 @@ module Aws::SessionStore::DynamoDB
       hash = {}
       hash['created_at'] = oldest_date(config.max_age) if config.max_age
       hash['updated_at'] = oldest_date(config.max_stale) if config.max_stale
-      { :scan_filter => hash }
+      { scan_filter: hash }
     end
 
     # Scans and deletes batch.
@@ -53,20 +53,20 @@ module Aws::SessionStore::DynamoDB
     # Deletes the batch gotten from the scan result.
     # @api private
     def batch_delete(config, items)
-      begin
+      loop do
         subset = items.shift(25)
         sub_batch = write(subset)
         process!(config, sub_batch)
-      end until subset.empty?
+        break if subset.empty?
+      end
     end
 
     # Turns array into correct format to be passed in to
     # a delete request.
     # @api private
     def write(sub_batch)
-      sub_batch.inject([]) do |rqst_array, item|
-        rqst_array << {:delete_request => {:key => item}}
-        rqst_array
+      sub_batch.each_with_object([]) do |item, rqst_array|
+        rqst_array << { delete_request: { key: item } }
       end
     end
 
@@ -74,12 +74,14 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def process!(config, sub_batch)
       return if sub_batch.empty?
+
       opts = {}
-      opts[:request_items] = {config.table_name => sub_batch}
-      begin
+      opts[:request_items] = { config.table_name => sub_batch }
+      loop do
         response = config.dynamo_db_client.batch_write_item(opts)
         opts[:request_items] = response[:unprocessed_items]
-      end until opts[:request_items].empty?
+        break if opts[:request_items].empty?
+      end
     end
 
     # Provides scan options.
@@ -92,8 +94,8 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def table_opts(config)
       {
-        :table_name => config.table_name,
-        :attributes_to_get => [config.table_key]
+        table_name: config.table_name,
+        attributes_to_get: [config.table_key]
       }
     end
 
@@ -101,7 +103,7 @@ module Aws::SessionStore::DynamoDB
     # @api private
     def oldest_date(sec)
       hash = {}
-      hash[:attribute_value_list] = [:n => "#{((Time.now - sec).to_f)}"]
+      hash[:attribute_value_list] = [n: (Time.now - sec).to_f.to_s]
       hash[:comparison_operator] = 'LT'
       hash
     end
@@ -109,7 +111,7 @@ module Aws::SessionStore::DynamoDB
     # Provides start key.
     # @api private
     def start_key(last_item)
-      { :exclusive_start_key => last_item }
+      { exclusive_start_key: last_item }
     end
   end
 end

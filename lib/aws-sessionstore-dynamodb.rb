@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Aws
   module SessionStore
+    # Namespace for DynamoDB rack session storage.
     module DynamoDB; end
   end
 end

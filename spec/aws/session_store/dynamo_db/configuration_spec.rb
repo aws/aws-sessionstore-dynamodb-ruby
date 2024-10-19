@@ -31,7 +31,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     {
       consistent_read: true,
       table_name: 'NewTable',
-      table_key: 'Somekey',
+      table_key: 'Somekey'
     }
   end
 
@@ -67,7 +67,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     end
 
     it 'merge YAML and runtime options giving runtime precendence' do
-      config_path = File.dirname(__FILE__) + '/app_config.yml'
+      config_path = "#{File.dirname(__FILE__)}/app_config.yml"
       runtime_opts = { config_file: config_path }.merge(runtime_options)
       expected_options(runtime_opts)
     end
@@ -75,7 +75,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     it 'throws an exception when wrong path for file' do
       config_path = 'Wrong path!'
       runtime_opts = { config_file: config_path }.merge(runtime_options)
-      expect { cfg = Aws::SessionStore::DynamoDB::Configuration.new(runtime_opts) }.to raise_error(Errno::ENOENT)
+      expect { Aws::SessionStore::DynamoDB::Configuration.new(runtime_opts) }.to raise_error(Errno::ENOENT)
     end
   end
 end

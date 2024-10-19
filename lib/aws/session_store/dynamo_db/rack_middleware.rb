@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack/session/abstract/id'
 require 'openssl'
 require 'aws-sdk-dynamodb'
@@ -6,10 +8,6 @@ module Aws::SessionStore::DynamoDB
   # This class is an ID based Session Store Rack Middleware
   # that uses a DynamoDB backend for session storage.
   class RackMiddleware < Rack::Session::Abstract::Persisted
-    # @return [Configuration] An instance of Configuration that is used for
-    #   this middleware.
-    attr_reader :config
-
     # Initializes SessionStore middleware.
     #
     # @param app Rack application.
@@ -24,6 +22,10 @@ module Aws::SessionStore::DynamoDB
       set_locking_strategy
     end
 
+    # @return [Configuration] An instance of Configuration that is used for
+    #   this middleware.
+    attr_reader :config
+
     private
 
     # Sets locking strategy for session handler
@@ -31,11 +33,11 @@ module Aws::SessionStore::DynamoDB
     # @return [Locking::Null] If locking is not enabled.
     # @return [Locking::Pessimistic] If locking is enabled.
     def set_locking_strategy
-      if @config.enable_locking
-        @lock = Aws::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
-      else
-        @lock = Aws::SessionStore::DynamoDB::Locking::Null.new(@config)
-      end
+      @lock = if @config.enable_locking
+                Aws::SessionStore::DynamoDB::Locking::Pessimistic.new(@config)
+              else
+                Aws::SessionStore::DynamoDB::Locking::Null.new(@config)
+              end
     end
 
     # Determines if the correct session table name is being used for
@@ -86,24 +88,22 @@ module Aws::SessionStore::DynamoDB
     # Each database operation is placed in this rescue wrapper.
     # This wrapper will call the method, rescue any exceptions and then pass
     # exceptions to the configured session handler.
-    def handle_error(env = nil, &block)
-      begin
-        yield
-      rescue Aws::DynamoDB::Errors::Base,
-             Aws::SessionStore::DynamoDB::InvalidIDError => e
-        @config.error_handler.handle_error(e, env)
-      end
+    def handle_error(env = nil)
+      yield
+    rescue Aws::DynamoDB::Errors::Base,
+           Aws::SessionStore::DynamoDB::InvalidIDError => e
+      @config.error_handler.handle_error(e, env)
     end
 
     # Generate HMAC hash based on MD5
     def generate_hmac(sid, secret)
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest::MD5.new, secret, sid).strip()
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('MD5'), secret, sid).strip
     end
 
     # Generate sid with HMAC hash
     def generate_sid(secure = @sid_secure)
-      sid = super(secure)
-      sid = "#{generate_hmac(sid, @config.secret_key)}--" + sid
+      sid = super
+      "#{generate_hmac(sid, @config.secret_key)}--" + sid
     end
 
     # Verify digest of HMACed hash
@@ -112,8 +112,10 @@ module Aws::SessionStore::DynamoDB
     # @return [false] If the HMAC id has been corrupted.
     def verify_hmac(sid)
       return unless sid
-      digest, ver_sid  = sid.split("--")
+
+      digest, ver_sid = sid.split('--')
       return false unless ver_sid
+
       digest == generate_hmac(ver_sid, @config.secret_key)
     end
   end
