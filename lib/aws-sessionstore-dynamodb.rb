@@ -9,12 +9,9 @@ module Aws
   end
 end
 
-require 'aws/session_store/dynamo_db/configuration'
-require 'aws/session_store/dynamo_db/errors/invalid_id_error'
-require 'aws/session_store/dynamo_db/errors/missing_secret_key_error'
-require 'aws/session_store/dynamo_db/errors/base_handler'
-require 'aws/session_store/dynamo_db/errors/default_handler'
-require 'aws/session_store/dynamo_db/garbage_collection'
-require 'aws/session_store/dynamo_db/rack_middleware'
-require 'aws/session_store/dynamo_db/session'
-require 'aws/session_store/dynamo_db/table'
+require_relative 'aws/session_store/dynamo_db/configuration'
+require_relative 'aws/session_store/dynamo_db/errors'
+require_relative 'aws/session_store/dynamo_db/garbage_collection'
+require_relative 'aws/session_store/dynamo_db/rack_middleware'
+require_relative 'aws/session_store/dynamo_db/session'
+require_relative 'aws/session_store/dynamo_db/table'

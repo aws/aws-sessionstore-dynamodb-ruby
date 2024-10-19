@@ -82,13 +82,16 @@ module Aws::SessionStore::DynamoDB
     def initialize(options = {})
       opts = file_options(options).merge(options)
       opts = env_options.merge(opts)
-      opts = opts.merge(default_dynamo_db_client(opts))
-      opts = opts.merge(default_error_handler(opts))
       MEMBERS.each_pair do |opt_name, default_value|
         opts[opt_name] = default_value unless opts.key?(opt_name)
-        instance_variable_set("@#{opt_name}", opts[opt_name])
       end
+      opts = opts.merge(dynamo_db_client: default_dynamo_db_client(opts))
+      opts = opts.merge(error_handler: default_error_handler(opts)) unless opts[:error_handler]
+
       @options = opts
+      @options.each_pair do |opt_name, value|
+        instance_variable_set("@#{opt_name}", value)
+      end
     end
 
     MEMBERS.each_key do |attr_name|
@@ -105,13 +108,11 @@ module Aws::SessionStore::DynamoDB
     def default_dynamo_db_client(options)
       dynamo_db_client = options[:dynamo_db_client] || Aws::DynamoDB::Client.new
       dynamo_db_client.config.user_agent_frameworks << 'aws-sessionstore-dynamodb'
-      { dynamo_db_client: dynamo_db_client }
+      dynamo_db_client
     end
 
     def default_error_handler(options)
-      error_handler = options[:error_handler] ||
-                      Aws::SessionStore::DynamoDB::Errors::DefaultHandler.new(options[:raise_errors])
-      { error_handler: error_handler }
+      Aws::SessionStore::DynamoDB::Errors::DefaultHandler.new(options[:raise_errors])
     end
 
     # @return [Hash] Environment options.
