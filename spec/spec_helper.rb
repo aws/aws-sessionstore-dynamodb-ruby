@@ -51,7 +51,7 @@ ConstantHelpers = lambda do
   let(:invalid_cookie) { { 'HTTP_COOKIE' => 'rack.session=ApplePieBlueberries' } }
   let(:invalid_session_data) { { 'rack.session' => { 'multiplier' => 1 } } }
   let(:rack_default_error_msg) { "Warning! Aws::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
-  let(:missing_key_error) { Aws::SessionStore::DynamoDB::MissingSecretKeyError }
+  let(:missing_key_error) { Aws::SessionStore::DynamoDB::Errors::MissingSecretKeyError }
 end
 #
 # RSpec.configure do |c|

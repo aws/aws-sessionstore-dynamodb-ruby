@@ -32,7 +32,7 @@ module Aws::SessionStore::DynamoDB
     # @raise [Aws::DynamoDB::Errors::ResourceNotFoundException] If wrong table
     #   name.
     def validate_config
-      raise MissingSecretKeyError unless @config.secret_key
+      raise Errors::MissingSecretKeyError unless @config.secret_key
     end
 
     # Gets session data.
@@ -42,7 +42,7 @@ module Aws::SessionStore::DynamoDB
       when nil
         set_new_session_properties(req.env)
       when false
-        handle_error { raise InvalidIDError }
+        handle_error { raise Errors::InvalidIDError }
         set_new_session_properties(req.env)
       else
         data = @session.get_session_data(req.env, sid)
@@ -77,7 +77,7 @@ module Aws::SessionStore::DynamoDB
     def handle_error(env = nil)
       yield
     rescue Aws::DynamoDB::Errors::Base,
-           Aws::SessionStore::DynamoDB::InvalidIDError => e
+           Aws::SessionStore::DynamoDB::Errors::InvalidIDError => e
       @config.error_handler.handle_error(e, env)
     end
 
