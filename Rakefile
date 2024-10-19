@@ -13,14 +13,12 @@ end
 
 desc 'Runs unit tests'
 RSpec::Core::RakeTask.new do |t|
-  t.rspec_opts = "-I #{$REPO_ROOT}/lib -I #{$REPO_ROOT}/spec --tag ~integration"
-  t.pattern = "#{$REPO_ROOT}/spec"
+  t.rspec_opts = '--tag ~integration --format documentation'
 end
 
 desc 'Runs integration tests'
 RSpec::Core::RakeTask.new('spec:integration') do |t|
-  t.rspec_opts = "-I #{$REPO_ROOT}/lib -I #{$REPO_ROOT}/spec --tag integration"
-  t.pattern = "#{$REPO_ROOT}/spec"
+  t.rspec_opts = "--tag integration --format documentation"
 end
 
 desc 'Runs unit and integration tests'

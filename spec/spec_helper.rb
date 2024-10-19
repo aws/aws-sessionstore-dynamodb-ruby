@@ -53,15 +53,15 @@ ConstantHelpers = lambda do
   let(:rack_default_error_msg) { "Warning! Aws::SessionStore::DynamoDB failed to save session. Content dropped.\n" }
   let(:missing_key_error) { Aws::SessionStore::DynamoDB::MissingSecretKeyError }
 end
-
-RSpec.configure do |c|
-  c.raise_errors_for_deprecations!
-  c.before(:each, integration: true) do
-    opts = { table_name: 'sessionstore-integration-test' }
-
-    defaults = Aws::SessionStore::DynamoDB::Configuration::DEFAULTS
-    defaults = defaults.merge(opts)
-    stub_const('Aws::SessionStore::DynamoDB::Configuration::DEFAULTS', defaults)
-    Aws::SessionStore::DynamoDB::Table.create_table(opts)
-  end
-end
+#
+# RSpec.configure do |c|
+#   c.raise_errors_for_deprecations!
+#   c.before(:each, integration: true) do
+#     opts = { table_name: 'sessionstore-integration-test' }
+#
+#     defaults = Aws::SessionStore::DynamoDB::Configuration::DEFAULTS
+#     defaults = defaults.merge(opts)
+#     stub_const('Aws::SessionStore::DynamoDB::Configuration::DEFAULTS', defaults)
+#     Aws::SessionStore::DynamoDB::Table.create_table(opts)
+#   end
+# end

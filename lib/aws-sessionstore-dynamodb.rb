@@ -3,7 +3,9 @@
 module Aws
   module SessionStore
     # Namespace for DynamoDB rack session storage.
-    module DynamoDB; end
+    module DynamoDB
+      VERSION = File.read(File.expand_path('../VERSION', __dir__)).strip
+    end
   end
 end
 
@@ -19,4 +21,3 @@ require 'aws/session_store/dynamo_db/locking/null'
 require 'aws/session_store/dynamo_db/locking/pessimistic'
 require 'aws/session_store/dynamo_db/rack_middleware'
 require 'aws/session_store/dynamo_db/table'
-require 'aws/session_store/dynamo_db/version'
