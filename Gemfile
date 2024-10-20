@@ -7,7 +7,7 @@ gemspec
 gem 'rake', require: false
 
 group :development do
-  gem 'byebug'
+  gem 'byebug', platforms: :ruby
   gem 'rubocop'
 end
 
