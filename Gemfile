@@ -1,12 +1,15 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-if ENV['RACK2']
-  gem 'rack', '~> 2'
-end
+source 'https://rubygems.org'
 
 gemspec
 
 gem 'rake', require: false
+
+group :development do
+  gem 'byebug', platforms: :ruby
+  gem 'rubocop'
+end
 
 group :docs do
   gem 'yard'
@@ -14,11 +17,9 @@ group :docs do
 end
 
 group :test do
-  gem 'rspec'
   gem 'rack-test'
+  gem 'rails'
+  gem 'rexml'
+  gem 'rspec'
   gem 'simplecov'
-
-  if RUBY_VERSION >= '3.0'
-    gem 'rexml'
-  end
 end
