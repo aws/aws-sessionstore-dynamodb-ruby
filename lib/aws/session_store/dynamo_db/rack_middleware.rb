@@ -45,14 +45,18 @@ module Aws::SessionStore::DynamoDB
         handle_error { raise Errors::InvalidIDError }
         set_new_session_properties(req.env)
       else
-        data = @session.get_session_data(req.env, sid)
-        [sid, data || {}]
+        get_session(req, sid)
       end
     end
 
     def set_new_session_properties(env)
       env['dynamo_db.new_session'] = 'true'
       [generate_sid, {}]
+    end
+
+    def get_session(req, sid)
+      data = @session.get_session_data(req.env, sid)
+      [sid, data || {}]
     end
 
     # Sets the session in the database after packing data.

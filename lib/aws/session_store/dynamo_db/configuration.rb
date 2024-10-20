@@ -86,12 +86,9 @@ module Aws::SessionStore::DynamoDB
         opts[opt_name] = default_value unless opts.key?(opt_name)
       end
       opts = opts.merge(dynamo_db_client: default_dynamo_db_client(opts))
-      opts = opts.merge(error_handler: default_error_handler(opts)) unless opts[:error_handler]
+      opts.merge(error_handler: default_error_handler(opts)) unless opts[:error_handler]
 
-      @options = opts
-      @options.each_pair do |opt_name, value|
-        instance_variable_set("@#{opt_name}", value)
-      end
+      set_attributes(opts)
     end
 
     MEMBERS.each_key do |attr_name|
@@ -151,6 +148,13 @@ module Aws::SessionStore::DynamoDB
       require 'yaml'
       opts = YAML.safe_load(ERB.new(File.read(file_path)).result) || {}
       opts.transform_keys(&:to_sym)
+    end
+
+    def set_attributes(options)
+      @options = options
+      options.each_pair do |opt_name, value|
+        instance_variable_set("@#{opt_name}", value)
+      end
     end
   end
 end

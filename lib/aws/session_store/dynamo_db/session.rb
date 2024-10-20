@@ -3,7 +3,7 @@
 module Aws::SessionStore::DynamoDB
   # Handles session management.
   class Session
-    # Creates configuration object.
+    # @param [Aws::SessionStore::DynamoDB::Configuration] cfg
     def initialize(cfg)
       @config = cfg
     end
@@ -20,12 +20,7 @@ module Aws::SessionStore::DynamoDB
       end
     end
 
-    # Packs session data.
-    def pack_data(data)
-      [Marshal.dump(data)].pack('m*')
-    end
-
-    # Gets session data.
+    # Retrieves session data based on id
     def get_session_data(env, sid)
       handle_error(env) do
         result = @config.dynamo_db_client.get_item(merge_all(table_opts(sid), attr_opts))
@@ -41,6 +36,8 @@ module Aws::SessionStore::DynamoDB
       end
     end
 
+    private
+
     # Each database operation is placed in this rescue wrapper.
     # This wrapper will call the method, rescue any exceptions and then pass
     # exceptions to the configured error handler.
@@ -49,8 +46,6 @@ module Aws::SessionStore::DynamoDB
     rescue Aws::DynamoDB::Errors::ServiceError => e
       @config.error_handler.handle_error(e, env)
     end
-
-    private
 
     # @return [Hash] Options for deleting session.
     def delete_opts(sid)
@@ -78,6 +73,11 @@ module Aws::SessionStore::DynamoDB
       expected = options[:expect_attr] || {}
       attribute_opts = merge_all(attr_updts(env, session, add_attr), expected)
       merge_all(table_opts(sid), attribute_opts)
+    end
+
+    # Marshal the data.
+    def pack_data(data)
+      [Marshal.dump(data)].pack('m*')
     end
 
     # Unmarshal the data.

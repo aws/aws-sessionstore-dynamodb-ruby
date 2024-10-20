@@ -3,12 +3,31 @@
 AllCops:
   Exclude:
     - 'tasks/release/**/*'
+    - 'test/dummy/db/migrate'
   NewCops: enable
   SuggestExtensions: false
   TargetRubyVersion: 2.5
 
 Gemspec/RequireMFA:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/ClassLength:
+  Max: 150
+
+Naming/AccessorMethodName:
+  Enabled: false
+
+Naming/FileName:
+  Exclude:
+    - 'lib/aws-sessionstore-dynamodb.rb'
+
+Security/MarshalLoad:
+  Exclude:
+    - 'lib/aws/session_store/dynamo_db/session.rb'
 
 Style/ClassAndModuleChildren:
   Enabled: false
