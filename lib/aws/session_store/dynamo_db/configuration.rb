@@ -86,7 +86,7 @@ module Aws::SessionStore::DynamoDB
         opts[opt_name] = default_value unless opts.key?(opt_name)
       end
       opts = opts.merge(dynamo_db_client: default_dynamo_db_client(opts))
-      opts.merge(error_handler: default_error_handler(opts)) unless opts[:error_handler]
+      opts = opts.merge(error_handler: default_error_handler(opts)) unless opts[:error_handler]
 
       set_attributes(opts)
     end
