@@ -18,5 +18,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack', '~> 3'
   spec.add_dependency 'rack-session', '~> 2'
 
-  spec.required_ruby_version = '>= 2.5'
+  spec.required_ruby_version = '>= 2.7'
 end
