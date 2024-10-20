@@ -34,7 +34,7 @@ jobs:
           bundle install
 
       - name: Unit tests
-        run: bundle exec rake spec
+        run: bundle exec rake
 
   rubocop:
     runs-on: ubuntu-latest
