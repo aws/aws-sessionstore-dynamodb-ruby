@@ -6,7 +6,7 @@ AllCops:
     - 'test/dummy/db/migrate'
   NewCops: enable
   SuggestExtensions: false
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.7
 
 Gemspec/RequireMFA:
   Enabled: false
