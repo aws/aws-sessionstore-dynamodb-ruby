@@ -15,5 +15,3 @@ require_relative 'aws/session_store/dynamo_db/garbage_collection'
 require_relative 'aws/session_store/dynamo_db/rack_middleware'
 require_relative 'aws/session_store/dynamo_db/session'
 require_relative 'aws/session_store/dynamo_db/table'
-
-require_relative 'action_dispatch/session/dynamo_db_store' if defined?(ActionDispatch::Session)
