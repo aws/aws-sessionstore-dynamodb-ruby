@@ -12,4 +12,4 @@
 .idea/
 
 test/dummy/db/migrate
-test/log/
+test/dummy/log

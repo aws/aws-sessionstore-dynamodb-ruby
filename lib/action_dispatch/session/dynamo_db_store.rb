@@ -21,7 +21,7 @@ module ActionDispatch
       include SessionObject
 
       def initialize(app, options = {})
-        options[:config_file] ||= config_file if File.exist?(config_file)
+        options[:config_file] ||= config_file
         options[:secret_key] ||= Rails.application.secret_key_base
         super
       end
@@ -31,7 +31,7 @@ module ActionDispatch
       def config_file
         file = Rails.root.join("config/dynamo_db_session_store/#{Rails.env}.yml")
         file = Rails.root.join('config/dynamo_db_session_store.yml') unless File.exist?(file)
-        file
+        file if File.exist?(file)
       end
     end
 
@@ -39,7 +39,8 @@ module ActionDispatch
     class DynamodbStore < DynamoDbStore
       def initialize(app, options = {})
         Rails.logger.warn('Session Store :dynamodb_store has been renamed to :dynamo_db_store, ' \
-                          'please use the new class instead.')
+                          'please use the new key instead. :dynamodb_store will be removed in ' \
+                          'aws-sdk-rails 5.0.0')
         super
       end
     end
