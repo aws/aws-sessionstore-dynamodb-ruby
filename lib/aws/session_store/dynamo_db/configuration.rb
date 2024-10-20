@@ -97,7 +97,9 @@ module Aws::SessionStore::DynamoDB
 
     # @return [Hash] The merged configuration hash.
     def to_hash
-      @options.dup
+      MEMBERS.each_with_object({}) do |(key, _), hash|
+        hash[key] = send(key)
+      end
     end
 
     private
@@ -151,9 +153,8 @@ module Aws::SessionStore::DynamoDB
     end
 
     def set_attributes(options)
-      @options = options
-      options.each_pair do |opt_name, value|
-        instance_variable_set("@#{opt_name}", value)
+      MEMBERS.each_key do |attr_name|
+        instance_variable_set("@#{attr_name}", options[attr_name])
       end
     end
   end
