@@ -18,6 +18,7 @@ end
 
 group :test do
   gem 'rack-test'
+  gem 'rails'
   gem 'rexml'
   gem 'rspec'
   gem 'simplecov'

@@ -1,0 +1,47 @@
+# Uncomment and manipulate the key value pairs below
+# in order to configure the DynamoDB Session Store Application.
+
+# [String] Session table name.
+#
+# table_name: sessions
+
+# [String] Session table hash key name.
+#
+# table_key: session_id
+
+# [Boolean] Define as true or false depending on if you want a strongly
+# consistent read.
+# See AWS DynamoDB documentation for table consistent_read for more
+# information on this setting.
+#
+# consistent_read: true
+
+# [Integer] Maximum number of reads consumed per second before DynamoDB returns a ThrottlingException.
+# See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/read-write-operations.html
+#
+# read_capacity: 10
+
+# [Integer] Maximum number of writes consumed per second before DynamoDB returns a ThrottlingException.
+# See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/read-write-operations.html
+#
+# write_capacity: 5
+
+# [Boolean] Define as true or false depending on whether you want all errors to be
+# raised up the stack.
+#
+# raise_errors: false
+
+# [Integer] Maximum number of seconds earlier from the current time that a session was created.
+# By default this is 7 days.
+#
+# max_age: 604800
+
+# [Integer] Maximum number of seconds before the current time that the session was last accessed.
+# By default this is 5 hours.
+#
+# max_stale: 18000
+
+# [String] The secret key for HMAC encryption. This defaults to
+# `Rails.application.secret_key_base`. You can use a different key if desired.
+#
+# secret_key: SECRET_KEY
