@@ -45,6 +45,7 @@ module Aws::SessionStore::DynamoDB
     MEMBERS = {
       table_name: 'sessions',
       table_key: 'session_id',
+      secret_key: nil,
       consistent_read: true,
       read_capacity: 10,
       write_capacity: 5,
@@ -56,7 +57,6 @@ module Aws::SessionStore::DynamoDB
       lock_expiry_time: 500,
       lock_retry_delay: 500,
       lock_max_wait_time: 1,
-      secret_key: nil,
       config_file: nil,
       dynamo_db_client: nil
     }.freeze
@@ -66,6 +66,7 @@ module Aws::SessionStore::DynamoDB
     #
     # @option options [String] :table_name ("sessions") Name of the session table.
     # @option options [String] :table_key ("session_id") The hash key of the session table.
+    # @option options [String] :secret_key Secret key for HMAC encryption.
     # @option options [Boolean] :consistent_read (true) If true, a strongly consistent read is used.
     #   If false, an eventually consistent read is used.
     #   @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html
@@ -92,8 +93,6 @@ module Aws::SessionStore::DynamoDB
     #   to obtain lock once an attempt to obtain the lock has been made and has failed.
     # @option options [Integer] :lock_max_wait_time (500) Maximum time in seconds to wait to acquire the
     #   lock before giving up.
-    # @option options [String] :secret_key (SecureRandom.hex(64))
-    #   Secret key for HMAC encryption.
     # @option options [String, Pathname] :config_file
     #   Path to a YAML file that contains configuration options.
     # @option options [Aws::DynamoDB::Client] :dynamo_db_client (Aws::DynamoDB::Client.new)
