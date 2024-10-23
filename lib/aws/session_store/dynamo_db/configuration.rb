@@ -14,6 +14,13 @@ module Aws::SessionStore::DynamoDB
   #   export DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
   #   export DYNAMO_DB_SESSION_TABLE_KEY='id'
   #
+  # == Locking Strategy
+  # By default, locking is disabled for session store access. To enable locking, set the
+  # `:enable_locking` option to true. The locking strategy is pessimistic, meaning that only one
+  # read can be made on a session at once. While the session is being read by the process with the
+  # lock, other processes may try to obtain a lock on the same session but will be blocked.
+  # See the initializer for how to configure the pessimistic locking strategy to your needs.
+  #
   # == Handling Errors
   # There are two configurable options for error handling: `:raise_errors` and `:error_handler`.
   #
@@ -45,6 +52,10 @@ module Aws::SessionStore::DynamoDB
       error_handler: nil,
       max_age: nil,
       max_stale: nil,
+      enable_locking: false,
+      lock_expiry_time: 500,
+      lock_retry_delay: 500,
+      lock_max_wait_time: 1,
       secret_key: nil,
       config_file: nil,
       dynamo_db_client: nil
@@ -73,6 +84,14 @@ module Aws::SessionStore::DynamoDB
     #   from the current time that a session was created.
     # @option options [Integer] :max_stale (nil) Maximum number of seconds
     #   before current time that session was last accessed.
+    # @option options [Integer] :enable_locking (false) If true, a pessimistic locking strategy will be
+    #   used for all session accesses.
+    # @option options [Integer] :lock_expiry_time (500) Time in milliseconds after which the lock
+    #   expires on session.
+    # @option options [Integer] :lock_retry_delay (500) Time in milliseconds to wait before retrying
+    #   to obtain lock once an attempt to obtain the lock has been made and has failed.
+    # @option options [Integer] :lock_max_wait_time (500) Maximum time in seconds to wait to acquire the
+    #   lock before giving up.
     # @option options [String] :secret_key (SecureRandom.hex(64))
     #   Secret key for HMAC encryption.
     # @option options [String, Pathname] :config_file

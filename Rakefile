@@ -17,13 +17,6 @@ RSpec::Core::RakeTask.new do |t|
   t.rspec_opts = '--tag ~integration --format documentation'
 end
 
-desc 'Runs rails integration tests'
-Rake::TestTask.new('test:rails') do |t|
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.warning = false
-end
-
 desc 'Runs integration tests'
 RSpec::Core::RakeTask.new('spec:integration') do |t|
   t.rspec_opts = '--tag integration --format documentation'
@@ -34,5 +27,5 @@ task 'test' => [:spec, 'spec:integration']
 
 RuboCop::RakeTask.new
 
-task default: [:spec, 'test:rails']
-task 'release:test' => [:spec, 'spec:integration', 'test:rails']
+task default: :spec
+task 'release:test' => [:spec, 'spec:integration']

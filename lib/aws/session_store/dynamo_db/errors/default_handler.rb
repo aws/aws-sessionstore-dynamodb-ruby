@@ -7,7 +7,8 @@ module Aws::SessionStore::DynamoDB::Errors
     HARD_ERRORS = [
       Aws::DynamoDB::Errors::ResourceNotFoundException,
       Aws::DynamoDB::Errors::ConditionalCheckFailedException,
-      Aws::SessionStore::DynamoDB::Errors::MissingSecretKeyError
+      Aws::SessionStore::DynamoDB::Errors::MissingSecretKeyError,
+      Aws::SessionStore::DynamoDB::Errors::LockWaitTimeoutError
     ].freeze
 
     # Determines behavior of DefaultErrorHandler

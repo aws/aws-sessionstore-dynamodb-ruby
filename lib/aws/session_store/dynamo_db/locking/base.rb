@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module Aws::SessionStore::DynamoDB
+module Aws::SessionStore::DynamoDB::Locking
   # Handles session management.
-  class Session
+  class Base
     # @param [Aws::SessionStore::DynamoDB::Configuration] cfg
     def initialize(cfg)
       @config = cfg
