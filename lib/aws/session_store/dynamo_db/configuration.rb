@@ -3,8 +3,9 @@
 require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
-  # This class provides a Configuration object for all DynamoDB transactions by pulling configuration
-  # options from Runtime, a YAML file, the ENV, and default settings, in that order.
+  # This class provides a Configuration object for all DynamoDB session store operations
+  # by pulling configuration options from Runtime, a YAML file, the ENV, and default
+  # settings, in that order.
   #
   # == Environment Variables
   # The Configuration object can load default values from your environment. All configuration
