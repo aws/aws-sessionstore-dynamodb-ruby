@@ -1,9 +1,9 @@
-module Aws::SessionStore::DynamoDB::Locking
-  # This class provides a framework for implementing
-  # locking strategies.
-  class Base
+# frozen_string_literal: true
 
-    # Creates configuration object.
+module Aws::SessionStore::DynamoDB::Locking
+  # Handles session management.
+  class Base
+    # @param [Aws::SessionStore::DynamoDB::Configuration] cfg
     def initialize(cfg)
       @config = cfg
     end
@@ -11,6 +11,7 @@ module Aws::SessionStore::DynamoDB::Locking
     # Updates session in database
     def set_session_data(env, sid, session, options = {})
       return false if session.empty?
+
       packed_session = pack_data(session)
       handle_error(env) do
         save_opts = update_opts(env, sid, packed_session, options)
@@ -19,12 +20,7 @@ module Aws::SessionStore::DynamoDB::Locking
       end
     end
 
-    # Packs session data.
-    def pack_data(data)
-      [Marshal.dump(data)].pack("m*")
-    end
-
-    # Gets session data.
+    # Retrieves session data based on id
     def get_session_data(env, sid)
       raise NotImplementedError
     end
@@ -36,18 +32,16 @@ module Aws::SessionStore::DynamoDB::Locking
       end
     end
 
+    private
+
     # Each database operation is placed in this rescue wrapper.
     # This wrapper will call the method, rescue any exceptions and then pass
     # exceptions to the configured error handler.
-    def handle_error(env = nil, &block)
-      begin
-        yield
-      rescue Aws::DynamoDB::Errors::ServiceError => e
-        @config.error_handler.handle_error(e, env)
-      end
+    def handle_error(env = nil)
+      yield
+    rescue Aws::DynamoDB::Errors::ServiceError => e
+      @config.error_handler.handle_error(e, env)
     end
-
-    private
 
     # @return [Hash] Options for deleting session.
     def delete_opts(sid)
@@ -57,11 +51,10 @@ module Aws::SessionStore::DynamoDB::Locking
     # @return [Hash] Options for updating item in Session table.
     def update_opts(env, sid, session, options = {})
       if env['dynamo_db.new_session']
-        updt_options = save_new_opts(env, sid, session)
+        save_new_opts(env, sid, session)
       else
-        updt_options = save_exists_opts(env, sid, session, options)
+        save_exists_opts(env, sid, session, options)
       end
-      updt_options
     end
 
     # @return [Hash] Options for saving a new session in database.
@@ -78,16 +71,21 @@ module Aws::SessionStore::DynamoDB::Locking
       merge_all(table_opts(sid), attribute_opts)
     end
 
+    # Marshal the data.
+    def pack_data(data)
+      [Marshal.dump(data)].pack('m*')
+    end
+
     # Unmarshal the data.
     def unpack_data(packed_data)
-      Marshal.load(packed_data.unpack("m*").first)
+      Marshal.load(packed_data.unpack1('m*'))
     end
 
     # Table options for client.
     def table_opts(sid)
       {
-        :table_name => @config.table_name,
-        :key => { @config.table_key => sid }
+        table_name: @config.table_name,
+        key: { @config.table_key => sid }
       }
     end
 
@@ -102,12 +100,12 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Update client with current time attribute.
     def updated_at
-      { :value => "#{(Time.now).to_f}", :action  => "PUT" }
+      { value: Time.now.to_f.to_s, action: 'PUT' }
     end
 
     # Attribute for creation of session.
     def created_attr
-      { "created_at" => updated_at }
+      { 'created_at' => updated_at }
     end
 
     # Update client with current time + max_stale.
@@ -124,35 +122,36 @@ module Aws::SessionStore::DynamoDB::Locking
     # Attribute for updating session.
     def updated_attr
       {
-        "updated_at" => updated_at
+        'updated_at' => updated_at
       }
     end
 
     def data_attr(session)
-       { "data" => {:value => session, :action  => "PUT"} }
+      { 'data' => { value: session, action: 'PUT' } }
     end
 
     # Determine if data has been manipulated
     def data_unchanged?(env, session)
       return false unless env['rack.initial_data']
+
       env['rack.initial_data'] == session
     end
 
     # Expected attributes
     def expected_attributes(sid)
-      { :expected => { @config.table_key => {:value => sid, :exists => true} } }
+      { expected: { @config.table_key => { value: sid, exists: true } } }
     end
 
     # Attributes to be retrieved via client
     def attr_opts
-      {:attributes_to_get => ["data"],
-      :consistent_read => @config.consistent_read}
+      { attributes_to_get: ['data'],
+        consistent_read: @config.consistent_read }
     end
 
     # @return [Hash] merged hash of all hashes passed in.
     def merge_all(*hashes)
       new_hash = {}
-      hashes.each{|hash| new_hash.merge!(hash)}
+      hashes.each { |hash| new_hash.merge!(hash) }
       new_hash
     end
   end

@@ -1,24 +1,22 @@
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
+# frozen_string_literal: true
+
+version = File.read(File.expand_path('VERSION', __dir__)).strip
 
 Gem::Specification.new do |spec|
-  spec.name          = "aws-sessionstore-dynamodb"
+  spec.name          = 'aws-sessionstore-dynamodb'
   spec.version       = version
-  spec.authors       = ["Amazon Web Services"]
-  spec.email         = ["aws-dr-rubygems@amazon.com"]
-
-  spec.summary       = "The Amazon DynamoDB Session Store handles sessions " +
-                       "for Ruby web applications using a DynamoDB backend."
-  spec.homepage      = "http://github.com/aws/aws-sessionstore-dynamodb-ruby"
-  spec.license       = "Apache License 2.0"
-
-  spec.files         = `git ls-files`.split($/)
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib"]
+  spec.author        = 'Amazon Web Services'
+  spec.email         = ['aws-dr-rubygems@amazon.com']
+  spec.summary       = 'The Amazon DynamoDB Session Store handles sessions ' \
+                       'for Rack web applications using a DynamoDB backend.'
+  spec.homepage      = 'https://github.com/aws/aws-sessionstore-dynamodb-ruby'
+  spec.license       = 'Apache-2.0'
+  spec.files         = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
 
   # Require 1.85.0 for user_agent_frameworks config
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
-  spec.add_dependency 'rack', '>= 2', '< 4'
-  spec.add_dependency 'rack-session', '>= 1', '< 3'
+  spec.add_dependency 'rack', '~> 3'
+  spec.add_dependency 'rack-session', '~> 2'
 
-  spec.required_ruby_version = '>= 2.5'
+  spec.required_ruby_version = '>= 2.7'
 end

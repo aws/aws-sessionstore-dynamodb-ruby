@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Aws::SessionStore::DynamoDB::Locking
   # This class gets and sets sessions
   # without a locking strategy.
@@ -18,9 +20,8 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # @return [String] Session data.
     def extract_data(env, result = nil)
-      env['rack.initial_data'] = result[:item]["data"] if result[:item]
-      unpack_data(result[:item]["data"]) if result[:item]
+      env['rack.initial_data'] = result[:item]['data'] if result[:item]
+      unpack_data(result[:item]['data']) if result[:item]
     end
-
   end
 end
