@@ -22,11 +22,7 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Retrieves session data based on id
     def get_session_data(env, sid)
-      handle_error(env) do
-        result = @config.dynamo_db_client.get_item(merge_all(table_opts(sid), attr_opts))
-        env['rack.initial_data'] = result[:item]['data'] if result[:item]
-        unpack_data(result[:item]['data']) if result[:item]
-      end
+      raise NotImplementedError
     end
 
     # Deletes session based on id

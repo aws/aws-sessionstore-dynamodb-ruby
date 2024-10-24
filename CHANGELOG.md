@@ -3,11 +3,11 @@ Unreleased Changes
 
 * Feature - Uses `rack` version 3 as the minimum.
 
-* Feature - Includes the ActiveRecord generator and ActiveDispatch session integrations from the `aws-sdk-rails` gem.
-
-* Feature - Removes locking configuration in favor of DynamoDB's consistent or eventual read server-side.
-
 * Feature - Drop support for Ruby 2.5 and 2.6.
+
+* Feature - Support additional configuration options through ENV.
+
+* Feature - Moves Error classes into the Errors module.
 
 2.2.0 (2024-01-25)
 ------------------

@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.author        = 'Amazon Web Services'
   spec.email         = ['aws-dr-rubygems@amazon.com']
   spec.summary       = 'The Amazon DynamoDB Session Store handles sessions ' \
-                       'for Ruby web applications using a DynamoDB backend.'
+                       'for Rack web applications using a DynamoDB backend.'
   spec.homepage      = 'https://github.com/aws/aws-sessionstore-dynamodb-ruby'
   spec.license       = 'Apache-2.0'
   spec.files         = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
