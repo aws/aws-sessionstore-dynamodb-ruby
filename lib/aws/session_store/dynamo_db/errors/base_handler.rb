@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Aws::SessionStore::DynamoDB::Errors
   # BaseErrorHandler provides an interface for error handlers
   # that can be passed in to {Aws::SessionStore::DynamoDB::RackMiddleware}.
