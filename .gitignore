@@ -10,6 +10,3 @@
 /.release
 
 .idea/
-
-test/dummy/db/migrate
-test/dummy/log

@@ -135,15 +135,22 @@ module Aws::SessionStore::DynamoDB::Locking
 
     # Expectation of when lock was set.
     def expect_lock_time(env)
-      { expected: { 'locked_at' => {
-        value: (env['locked_at']).to_s, exists: true
-      } } }
+      {
+        expected: {
+          'locked_at' => {
+            value: (env['locked_at']).to_s,
+            exists: true
+          }
+        }
+      }
     end
 
     # Attributes to be retrieved via client
     def lock_opts
-      { attributes_to_get: ['locked_at'],
-        consistent_read: @config.consistent_read }
+      {
+        attributes_to_get: ['locked_at'],
+        consistent_read: @config.consistent_read
+      }
     end
   end
 end
