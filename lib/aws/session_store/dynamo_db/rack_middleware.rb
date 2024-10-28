@@ -17,7 +17,41 @@ module Aws::SessionStore::DynamoDB
     def initialize(app, options = {})
       super
       @config = Configuration.new(options)
+      validate_config
       set_locking_strategy
+    end
+
+    # Get session from the database or create a new session.
+    #
+    # @raise [Aws::SessionStore::DynamoDB::Errors::LockWaitTimeoutError] If the session
+    #   has waited too long to obtain lock.
+    def find_session(req, sid)
+      case verify_hmac(sid)
+      when nil
+        set_new_session_properties(req.env)
+      when false
+        handle_error { raise Errors::InvalidIDError }
+        set_new_session_properties(req.env)
+      else
+        data = @lock.get_session_data(req.env, sid)
+        [sid, data || {}]
+      end
+    end
+
+    # Sets the session in the database after packing data.
+    #
+    # @return [Hash] If session has been saved.
+    # @return [false] If session has could not be saved.
+    def write_session(req, sid, session, options)
+      @lock.set_session_data(req.env, sid, session, options)
+    end
+
+    # Destroys session and removes session from database.
+    #
+    # @return [String] return a new session id or nil if options[:drop]
+    def delete_session(req, sid, options)
+      @lock.delete_session(req.env, sid)
+      generate_sid unless options[:drop]
     end
 
     # @return [Configuration] An instance of Configuration that is used for
@@ -39,49 +73,10 @@ module Aws::SessionStore::DynamoDB
       raise Errors::MissingSecretKeyError unless @config.secret_key
     end
 
-    # Get session from the database or create a new session.
-    def find_session(req, sid)
-      validate_config
-      case verify_hmac(sid)
-      when nil
-        set_new_session_properties(req.env)
-      when false
-        handle_error { raise Errors::InvalidIDError }
-        set_new_session_properties(req.env)
-      else
-        get_session(req, sid)
-      end
-    end
-
     # Sets new session properties.
     def set_new_session_properties(env)
       env['dynamo_db.new_session'] = 'true'
       [generate_sid, {}]
-    end
-
-    # Retrieves session from the database after unpacking data.
-    #
-    # @raise [Aws::SessionStore::DynamoDB::Errors::LockWaitTimeoutError] If the session
-    #   has waited too long to obtain lock.
-    def get_session(req, sid)
-      data = @lock.get_session_data(req.env, sid)
-      [sid, data || {}]
-    end
-
-    # Sets the session in the database after packing data.
-    #
-    # @return [Hash] If session has been saved.
-    # @return [false] If session has could not be saved.
-    def write_session(req, sid, session, options)
-      @lock.set_session_data(req.env, sid, session, options)
-    end
-
-    # Destroys session and removes session from database.
-    #
-    # @return [String] return a new session id or nil if options[:drop]
-    def delete_session(req, sid, options)
-      @lock.delete_session(req.env, sid)
-      generate_sid unless options[:drop]
     end
 
     # Each database operation is placed in this rescue wrapper.
