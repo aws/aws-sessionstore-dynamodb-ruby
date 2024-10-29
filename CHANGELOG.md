@@ -9,6 +9,10 @@ Unreleased Changes
 
 * Feature - Moves Error classes into the Errors module.
 
+* Issue - Set `find_session`, `write_session`, and `delete_session` as public.
+
+* Issue - Validate `Configuration` has secret_key on `:initialize` instead of on `:find_session`.
+
 2.2.0 (2024-01-25)
 ------------------
 
