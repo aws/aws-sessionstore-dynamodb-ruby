@@ -1,4 +1,4 @@
-Unreleased Changes
+3.0.0 (2024-10-29)
 ------------------
 
 * Feature - Uses `rack ~> 3` as the minimum.
