@@ -1,12 +1,12 @@
 .DS_Store
+.idea/
 
 /.byebug_history
 /.bundle
 /.yardoc
 /doc
+/docs.zip
 /Gemfile.lock
 /coverage
-*.gem
+/*.gem
 /.release
-
-.idea/

@@ -16,6 +16,10 @@ group :docs do
   gem 'yard-sitemap', '~> 1.0'
 end
 
+group :release do
+  gem 'octokit'
+end
+
 group :test do
   gem 'rack-test'
   gem 'rails'
