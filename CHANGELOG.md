@@ -1,17 +1,17 @@
 Unreleased Changes
 ------------------
 
-* Feature - Uses `rack` version 3 as the minimum.
+* Feature - Uses `rack ~> 3` as the minimum.
 
 * Feature - Drop support for Ruby 2.5 and 2.6.
 
 * Feature - Support additional configuration options through ENV.
 
-* Feature - Moves Error classes into the Errors module.
+* Feature - Moves error classes into the `Errors` module.
 
-* Issue - Set `find_session`, `write_session`, and `delete_session` as public.
+* Issue - Set `RackMiddleware`'s `#find_session`, `#write_session`, and `#delete_session` as public.
 
-* Issue - Validate `Configuration` has secret_key on `:initialize` instead of on `:find_session`.
+* Issue - Validate `Configuration` has a secret key on `RackMiddleware#initialize` instead of on `#find_session`.
 
 2.2.0 (2024-01-25)
 ------------------
