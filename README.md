@@ -93,7 +93,7 @@ Note that `:secret_key` is a mandatory configuration option that must be set.
 which also includes additional options (such as `:key`) that can be set.
 
 The `RackMiddleware` inherits from the
-[`Rack::Session::Abstract::Persisted`](https://rubydoc.info/github/rack/rack-session/main/Rack/Session/Abstract/Persisted)
+[Rack::Session::Abstract::Persisted](https://rubydoc.info/github/rack/rack-session/main/Rack/Session/Abstract/Persisted)
 class, which also includes additional options (such as `:key`) that can be
 passed into the class.
 
