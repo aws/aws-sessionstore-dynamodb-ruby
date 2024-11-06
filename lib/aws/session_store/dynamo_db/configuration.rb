@@ -166,7 +166,8 @@ module Aws::SessionStore::DynamoDB
       require 'erb'
       require 'yaml'
       opts = YAML.safe_load(ERB.new(File.read(file_path)).result) || {}
-      opts.transform_keys(&:to_sym)
+      unsupported_keys = %i[dynamo_db_client error_handler config_file]
+      opts.transform_keys(&:to_sym).reject { |k, _| unsupported_keys.include?(k) }
     end
 
     def set_attributes(options)

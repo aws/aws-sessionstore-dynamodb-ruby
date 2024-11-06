@@ -62,8 +62,9 @@ describe Aws::SessionStore::DynamoDB::Configuration do
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
       expect(cfg.to_hash).to include(options)
+    ensure
+      teardown_env(options)
     end
-    teardown_env(options)
   end
 
   it 'configures in code with full precedence' do
@@ -74,8 +75,9 @@ describe Aws::SessionStore::DynamoDB::Configuration do
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(options.merge(config_file: f.path))
       expect(cfg.to_hash).to include(options)
+    ensure
+      teardown_env(options.merge(old))
     end
-    teardown_env(options.merge(old))
   end
 
   it 'allows for config file to be configured with ENV' do
@@ -85,7 +87,28 @@ describe Aws::SessionStore::DynamoDB::Configuration do
       ENV['DYNAMO_DB_SESSION_CONFIG_FILE'] = f.path
       cfg = Aws::SessionStore::DynamoDB::Configuration.new
       expect(cfg.to_hash).to include(options)
+    ensure
       ENV.delete('DYNAMO_DB_SESSION_CONFIG_FILE')
+    end
+  end
+
+  it 'ignores certain keys in ENV' do
+    ENV['DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT'] = 'Client'
+    ENV['DYNAMO_DB_SESSION_ERROR_HANDLER'] = 'Handler'
+    cfg = Aws::SessionStore::DynamoDB::Configuration.new
+    expect(cfg.to_hash).to include(defaults)
+  ensure
+    ENV.delete('DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT')
+    ENV.delete('DYNAMO_DB_SESSION_ERROR_HANDLER')
+  end
+
+  it 'ignores certain keys in YAML' do
+    Tempfile.create('dynamo_db_session_store.yml') do |f|
+      options = { dynamo_db_client: 'Client', error_handler: 'Handler', config_file: 'File' }
+      f << options.transform_keys(&:to_s).to_yaml
+      f.rewind
+      cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
+      expect(cfg.to_hash).to include(defaults.merge(config_file: f.path))
     end
   end
 
