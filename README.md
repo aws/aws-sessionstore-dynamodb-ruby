@@ -37,17 +37,12 @@ gem 'aws-sdk-rails', '~> 4'
 
 A number of options are available to be set in
 `Aws::SessionStore::DynamoDB::Configuration`, which is used throughout the
-application. These options can be set directly by Ruby code, through
-a YAML configuration file, or Environment variables, in order of precedence.
+application. These options can be set directly in Ruby code, in ENV variables,
+or in a YAML configuration file, in order of precedence.
 
 The full set of options along with defaults can be found in the
 [Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html)
 documentation.
-
-### YAML Configuration
-
-You can create a YAML configuration file to set the options. The file must be
-passed into Configuration as the `:config_file` option.
 
 ### Environment Options
 
@@ -61,6 +56,12 @@ directly if needed. The environment options must be prefixed with
 The example below would be a valid way to set the session table name:
 
     export DYNAMO_DB_SESSION_TABLE_NAME='your-table-name'
+
+### YAML Configuration
+
+You can create a YAML configuration file to set the options. The file must be
+passed into Configuration as the `:config_file` option or with the
+`DYNAMO_DB_SESSION_CONFIG_FILE` environment variable.
 
 ## Creating the session table
 
