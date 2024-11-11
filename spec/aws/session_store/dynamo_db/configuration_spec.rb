@@ -55,7 +55,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     end
   end
 
-  it 'configs with ENV with precedence over YAML' do
+  it 'configures with ENV with precedence over YAML' do
     setup_env(options)
     Tempfile.create('dynamo_db_session_store.yml') do |f|
       f << { table_name: 'OldTable', table_key: 'OldKey' }.transform_keys(&:to_s).to_yaml
@@ -92,7 +92,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     end
   end
 
-  it 'ignores certain keys in ENV' do
+  it 'ignores unsupported keys in ENV' do
     ENV['DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT'] = 'Client'
     ENV['DYNAMO_DB_SESSION_ERROR_HANDLER'] = 'Handler'
     cfg = Aws::SessionStore::DynamoDB::Configuration.new
@@ -102,7 +102,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
     ENV.delete('DYNAMO_DB_SESSION_ERROR_HANDLER')
   end
 
-  it 'ignores certain keys in YAML' do
+  it 'ignores unsupported keys in YAML' do
     Tempfile.create('dynamo_db_session_store.yml') do |f|
       options = { dynamo_db_client: 'Client', error_handler: 'Handler', config_file: 'File' }
       f << options.transform_keys(&:to_s).to_yaml
