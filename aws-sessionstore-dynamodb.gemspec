@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
                       'for Rack web applications using a DynamoDB backend.'
   spec.homepage     = 'https://github.com/aws/aws-sessionstore-dynamodb-ruby'
   spec.license      = 'Apache-2.0'
-  spec.files        = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
+  spec.files        = Dir['LICENSE', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
 
   # Require 1.85.0 for user_agent_frameworks config
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1', '>= 1.85.0'
