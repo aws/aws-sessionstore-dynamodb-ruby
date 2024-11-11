@@ -4,17 +4,14 @@ require 'spec_helper'
 
 describe Aws::SessionStore::DynamoDB::GarbageCollection do
   def items(min, max)
-    items = []
-    (min..max).each do |i|
-      items << { 'session_id' => { s: i.to_s } }
+    (min..max).map do |i|
+      { 'session_id' => { s: i.to_s } }
     end
-    items
   end
 
   def format_scan_result
-    items = []
-    (31..49).each do |i|
-      items << { 'session_id' => { s: i.to_s } }
+    items = (31..49).map do |i|
+      { 'session_id' => { s: i.to_s } }
     end
 
     items.each_with_object([]) do |item, rqst_array|

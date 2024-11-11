@@ -4,7 +4,7 @@ require 'aws-sdk-dynamodb'
 
 module Aws::SessionStore::DynamoDB
   # This class provides a Configuration object for all DynamoDB session store operations
-  # by pulling configuration options from Runtime, a YAML file, the ENV, and default
+  # by pulling configuration options from Runtime, the ENV, a YAML file, and default
   # settings, in that order.
   #
   # == Environment Variables
@@ -63,7 +63,7 @@ module Aws::SessionStore::DynamoDB
     }.freeze
 
     # Provides configuration object that allows access to options defined
-    # during Runtime, in a YAML file, in the ENV, and by default.
+    # during Runtime, in the ENV, in a YAML file, and by default.
     #
     # @option options [String] :table_name ("sessions") Name of the session table.
     # @option options [String] :table_key ("session_id") The hash key of the session table.
@@ -99,8 +99,9 @@ module Aws::SessionStore::DynamoDB
     # @option options [Aws::DynamoDB::Client] :dynamo_db_client (Aws::DynamoDB::Client.new)
     #   DynamoDB client used to perform database operations inside of the rack application.
     def initialize(options = {})
-      opts = file_options(options).merge(options)
+      opts = options
       opts = env_options.merge(opts)
+      opts = file_options(opts).merge(opts)
       MEMBERS.each_pair do |opt_name, default_value|
         opts[opt_name] = default_value unless opts.key?(opt_name)
       end
@@ -145,13 +146,10 @@ module Aws::SessionStore::DynamoDB
     end
 
     def parse_env_value(key)
-      Integer(ENV.fetch(key, nil))
+      val = ENV.fetch(key, nil)
+      Integer(val)
     rescue ArgumentError
-      if ENV[key] == 'true' || ENV[key] == 'false'
-        ENV[key] == 'true'
-      else
-        ENV.fetch(key, nil)
-      end
+      %w[true false].include?(val) ? val == 'true' : val
     end
 
     # @return [Hash] File options.
@@ -168,7 +166,8 @@ module Aws::SessionStore::DynamoDB
       require 'erb'
       require 'yaml'
       opts = YAML.safe_load(ERB.new(File.read(file_path)).result) || {}
-      opts.transform_keys(&:to_sym)
+      unsupported_keys = %i[dynamo_db_client error_handler config_file]
+      opts.transform_keys(&:to_sym).reject { |k, _| unsupported_keys.include?(k) }
     end
 
     def set_attributes(options)
