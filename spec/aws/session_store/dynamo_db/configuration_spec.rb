@@ -27,12 +27,12 @@ describe Aws::SessionStore::DynamoDB::Configuration do
 
   def setup_env(options)
     options.each do |k, v|
-      ENV["DYNAMO_DB_SESSION_#{k.to_s.upcase}"] = v.to_s
+      ENV["AWS_DYNAMO_DB_SESSION_#{k.to_s.upcase}"] = v.to_s
     end
   end
 
   def teardown_env(options)
-    options.each_key { |k| ENV.delete("DYNAMO_DB_SESSION_#{k.to_s.upcase}") }
+    options.each_key { |k| ENV.delete("AWS_DYNAMO_DB_SESSION_#{k.to_s.upcase}") }
   end
 
   let(:client) { Aws::DynamoDB::Client.new(stub_responses: true) }
@@ -47,7 +47,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   end
 
   it 'configures with YAML with precedence over defaults' do
-    Tempfile.create('dynamo_db_session_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << options.transform_keys(&:to_s).to_yaml
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
@@ -57,7 +57,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
 
   it 'configures with ENV with precedence over YAML' do
     setup_env(options)
-    Tempfile.create('dynamo_db_session_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << { table_name: 'OldTable', table_key: 'OldKey' }.transform_keys(&:to_s).to_yaml
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
@@ -70,7 +70,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   it 'configures in code with full precedence' do
     old = { table_name: 'OldTable', table_key: 'OldKey' }
     setup_env(options.merge(old))
-    Tempfile.create('dynamo_db_session_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << old.transform_keys(&:to_s).to_yaml
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(options.merge(config_file: f.path))
@@ -81,29 +81,29 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   end
 
   it 'allows for config file to be configured with ENV' do
-    Tempfile.create('dynamo_db_session_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << options.transform_keys(&:to_s).to_yaml
       f.rewind
-      ENV['DYNAMO_DB_SESSION_CONFIG_FILE'] = f.path
+      ENV['AWS_DYNAMO_DB_SESSION_CONFIG_FILE'] = f.path
       cfg = Aws::SessionStore::DynamoDB::Configuration.new
       expect(cfg.to_hash).to include(options)
     ensure
-      ENV.delete('DYNAMO_DB_SESSION_CONFIG_FILE')
+      ENV.delete('AWS_DYNAMO_DB_SESSION_CONFIG_FILE')
     end
   end
 
   it 'ignores unsupported keys in ENV' do
-    ENV['DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT'] = 'Client'
-    ENV['DYNAMO_DB_SESSION_ERROR_HANDLER'] = 'Handler'
+    ENV['AWS_DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT'] = 'Client'
+    ENV['AWS_DYNAMO_DB_SESSION_ERROR_HANDLER'] = 'Handler'
     cfg = Aws::SessionStore::DynamoDB::Configuration.new
     expect(cfg.to_hash).to include(defaults)
   ensure
-    ENV.delete('DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT')
-    ENV.delete('DYNAMO_DB_SESSION_ERROR_HANDLER')
+    ENV.delete('AWS_DYNAMO_DB_SESSION_DYNAMO_DB_CLIENT')
+    ENV.delete('AWS_DYNAMO_DB_SESSION_ERROR_HANDLER')
   end
 
   it 'ignores unsupported keys in YAML' do
-    Tempfile.create('dynamo_db_session_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       options = { dynamo_db_client: 'Client', error_handler: 'Handler', config_file: 'File' }
       f << options.transform_keys(&:to_s).to_yaml
       f.rewind
