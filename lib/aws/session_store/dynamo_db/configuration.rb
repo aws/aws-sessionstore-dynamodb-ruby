@@ -138,19 +138,23 @@ module Aws::SessionStore::DynamoDB
     def env_options
       unsupported_keys = %i[dynamo_db_client error_handler]
       (MEMBERS.keys - unsupported_keys).each_with_object({}) do |opt_name, opts|
-        # legacy - remove this in aws-sessionstore-dynamodb ~> 4
-        key = "DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
-        if ENV.key?(key)
-          Kernel.warn("The environment variable `#{key}` is deprecated.
-                       Please use `AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}` instead.")
-        else
-          key = "AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
-          next unless ENV.key?(key)
-        end
-
+        key = env_key(opt_name)
+        next unless ENV.key?(key)
 
         opts[opt_name] = parse_env_value(key)
       end
+    end
+
+    def env_key(opt_name)
+      # legacy - remove this in aws-sessionstore-dynamodb ~> 4
+      key = "DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
+      if ENV.key?(key)
+        Kernel.warn("The environment variable `#{key}` is deprecated.
+                     Please use `AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}` instead.")
+      else
+        key = "AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
+      end
+      key
     end
 
     def parse_env_value(key)
