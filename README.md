@@ -49,19 +49,19 @@ documentation.
 All Configuration options can be loaded from the environment except for
 `:dynamo_db_client` and `:error_handler`, which must be set in Ruby code
 directly if needed. The environment options must be prefixed with
-`DYNAMO_DB_SESSION_` and then the name of the option:
+`AWS_DYNAMO_DB_SESSION_` and then the name of the option:
 
-    DYNAMO_DB_SESSION_<name-of-option>
+    AWS_DYNAMO_DB_SESSION_<name-of-option>
 
 The example below would be a valid way to set the session table name:
 
-    export DYNAMO_DB_SESSION_TABLE_NAME='your-table-name'
+    export AWS_DYNAMO_DB_SESSION_TABLE_NAME='your-table-name'
 
 ### YAML Configuration
 
 You can create a YAML configuration file to set the options. The file must be
 passed into Configuration as the `:config_file` option or with the
-`DYNAMO_DB_SESSION_CONFIG_FILE` environment variable.
+`AWS_DYNAMO_DB_SESSION_CONFIG_FILE` environment variable.
 
 ## Creating the session table
 

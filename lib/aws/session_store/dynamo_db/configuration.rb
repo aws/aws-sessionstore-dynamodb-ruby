@@ -10,10 +10,10 @@ module Aws::SessionStore::DynamoDB
   # == Environment Variables
   # The Configuration object can load default values from your environment. All configuration
   # keys are supported except for `:dynamo_db_client` and `:error_handler`. The keys take the form
-  # of DYNAMO_DB_SESSION_<KEY_NAME>. Example:
+  # of AWS_DYNAMO_DB_SESSION_<KEY_NAME>. Example:
   #
-  #   export DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
-  #   export DYNAMO_DB_SESSION_TABLE_KEY='id'
+  #   export AWS_DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
+  #   export AWS_DYNAMO_DB_SESSION_TABLE_KEY='id'
   #
   # == Locking Strategy
   # By default, locking is disabled for session store access. To enable locking, set the
@@ -138,8 +138,16 @@ module Aws::SessionStore::DynamoDB
     def env_options
       unsupported_keys = %i[dynamo_db_client error_handler]
       (MEMBERS.keys - unsupported_keys).each_with_object({}) do |opt_name, opts|
+        # legacy - remove this in aws-sessionstore-dynamodb ~> 4
         key = "DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
-        next unless ENV.key?(key)
+        if ENV.key?(key)
+          Kernel.warn("The environment variable `#{key}` is deprecated.
+                       Please use `AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}` instead.")
+        else
+          key = "AWS_DYNAMO_DB_SESSION_#{opt_name.to_s.upcase}"
+          next unless ENV.key?(key)
+        end
+
 
         opts[opt_name] = parse_env_value(key)
       end
