@@ -47,7 +47,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
   end
 
   it 'configures with YAML with precedence over defaults' do
-    Tempfile.create('AWS_DYNAMO_DB_SESSION_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << options.transform_keys(&:to_s).to_yaml
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
@@ -57,7 +57,7 @@ describe Aws::SessionStore::DynamoDB::Configuration do
 
   it 'configures with ENV with precedence over YAML' do
     setup_env(options)
-    Tempfile.create('AWS_DYNAMO_DB_SESSION_store.yml') do |f|
+    Tempfile.create('aws_dynamo_db_session_store.yml') do |f|
       f << { table_name: 'OldTable', table_key: 'OldKey' }.transform_keys(&:to_s).to_yaml
       f.rewind
       cfg = Aws::SessionStore::DynamoDB::Configuration.new(config_file: f.path)
