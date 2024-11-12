@@ -3,6 +3,8 @@ Unreleased Changes
 
 * Issue - `Configuration` now takes environment variables with precedence over YAML configuration.
 
+* Issue - Use ENV variables that are prefixed by `AWS_`.
+
 3.0.0 (2024-10-29)
 ------------------
 
