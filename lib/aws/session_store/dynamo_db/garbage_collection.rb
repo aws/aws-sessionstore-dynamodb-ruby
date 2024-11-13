@@ -9,6 +9,7 @@ module Aws::SessionStore::DynamoDB
     class << self
       # Scans DynamoDB session table to find sessions that match the max age and
       # max stale period requirements. it then deletes all of the found sessions.
+      # @option (see Configuration#initialize)
       def collect_garbage(options = {})
         config = load_config(options)
         last_key = eliminate_unwanted_sessions(config)
