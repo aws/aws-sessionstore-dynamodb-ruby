@@ -1,4 +1,4 @@
-Unreleased Changes
+3.0.1 (2024-11-16)
 ------------------
 
 * Issue - `Configuration` now takes environment variables with precedence over YAML configuration.
