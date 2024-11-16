@@ -7,22 +7,22 @@ module Aws::SessionStore::DynamoDB
   # by pulling configuration options from Runtime, the ENV, a YAML file, and default
   # settings, in that order.
   #
-  # == Environment Variables
+  # # Environment Variables
   # The Configuration object can load default values from your environment. All configuration
   # keys are supported except for `:dynamo_db_client` and `:error_handler`. The keys take the form
   # of AWS_DYNAMO_DB_SESSION_<KEY_NAME>. Example:
   #
-  #   export AWS_DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
-  #   export AWS_DYNAMO_DB_SESSION_TABLE_KEY='id'
+  #     export AWS_DYNAMO_DB_SESSION_TABLE_NAME='Sessions'
+  #     export AWS_DYNAMO_DB_SESSION_TABLE_KEY='id'
   #
-  # == Locking Strategy
+  # # Locking Strategy
   # By default, locking is disabled for session store access. To enable locking, set the
   # `:enable_locking` option to true. The locking strategy is pessimistic, meaning that only one
   # read can be made on a session at once. While the session is being read by the process with the
   # lock, other processes may try to obtain a lock on the same session but will be blocked.
   # See the initializer for how to configure the pessimistic locking strategy to your needs.
   #
-  # == Handling Errors
+  # # Handling Errors
   # There are two configurable options for error handling: `:raise_errors` and `:error_handler`.
   #
   # If you would like to use the Default Error Handler, you can decide to set `:raise_errors`
@@ -33,12 +33,12 @@ module Aws::SessionStore::DynamoDB
   # class and pass it into the `:error_handler` option.
   # @see BaseHandler Interface for Error Handling for DynamoDB Session Store.
   #
-  # == DynamoDB Specific Options
+  # # DynamoDB Specific Options
   # You may configure the table name and table hash key value of your session table with
   # the `:table_name` and `:table_key` options. You may also configure performance options for
   # your table with the `:consistent_read`, `:read_capacity`, `:write_capacity`. For more information
   # about these configurations see
-  # {https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/DynamoDB/Client.html#create_table-instance_method CreateTable }
+  # {https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/DynamoDB/Client.html#create_table-instance_method CreateTable}
   # method for Amazon DynamoDB.
   #
   class Configuration

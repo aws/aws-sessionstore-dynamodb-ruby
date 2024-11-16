@@ -2,3 +2,4 @@
 --template-path doc-src/templates
 --hide-api private
 --plugin sitemap
+--markup markdown
