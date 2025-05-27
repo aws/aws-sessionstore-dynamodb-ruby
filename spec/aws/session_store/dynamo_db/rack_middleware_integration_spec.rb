@@ -24,7 +24,7 @@ module Aws
 
         def extract_time(sid)
           options = table_opts(sid).merge(attr_opts)
-          Time.at((config.dynamo_db_client.get_item(options)[:item]['created_at']).to_f)
+          Time.at(config.dynamo_db_client.get_item(options)[:item]['created_at'].to_f)
         end
 
         let(:options) do
