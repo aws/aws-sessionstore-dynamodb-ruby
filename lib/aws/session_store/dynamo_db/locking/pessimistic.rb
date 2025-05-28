@@ -59,7 +59,7 @@ module Aws::SessionStore::DynamoDB::Locking
     # @return [Time] Time stamp for which the session was locked.
     def lock_time(sid)
       result = @config.dynamo_db_client.get_item(get_lock_time_opts(sid))
-      (result[:item]['locked_at']).to_f if result[:item]['locked_at']
+      result[:item]['locked_at']&.to_f
     end
 
     # @return [String] Session data.
@@ -138,7 +138,7 @@ module Aws::SessionStore::DynamoDB::Locking
       {
         expected: {
           'locked_at' => {
-            value: (env['locked_at']).to_s,
+            value: env['locked_at'].to_s,
             exists: true
           }
         }
