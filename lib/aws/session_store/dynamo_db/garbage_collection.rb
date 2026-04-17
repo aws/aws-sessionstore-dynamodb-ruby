@@ -93,7 +93,7 @@ module Aws::SessionStore::DynamoDB
       # Provides specified date attributes.
       def oldest_date(sec)
         {
-          attribute_value_list: [n: (Time.now - sec).to_f.to_s],
+          attribute_value_list: [{ n: (Time.now - sec).to_f.to_s }],
           comparison_operator: 'LT'
         }
       end
