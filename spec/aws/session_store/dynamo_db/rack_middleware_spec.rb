@@ -29,7 +29,7 @@ module Aws
         let(:app) { RackMiddleware.new(base_app, options) }
 
         let(:sample_packed_data) do
-          [Marshal.dump('multiplier' => 1)].pack('m*')
+          JSON.dump('multiplier' => 1)
         end
 
         let(:dynamo_db_client) do
