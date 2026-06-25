@@ -102,6 +102,11 @@ module Aws::SessionStore::DynamoDB
     #     Marshal if JSON parsing fails. Use this during migration from Marshal to JSON.
     #   - `:marshal` - Serialize and deserialize with Marshal only (legacy behavior, not
     #     recommended due to security concerns).
+    #
+    #   Note: When using `:json` or `:json_allow_marshal`, session data must consist of
+    #   JSON-compatible types only (strings, numbers, booleans, arrays, hashes with string
+    #   keys). Symbol keys are converted to strings, and complex objects (e.g., Time, custom
+    #   classes) are not preserved across serialization.
     # @option options [String, Pathname] :config_file
     #   Path to a YAML file that contains configuration options.
     # @option options [Aws::DynamoDB::Client] :dynamo_db_client (Aws::DynamoDB::Client.new)

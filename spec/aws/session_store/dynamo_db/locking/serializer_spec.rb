@@ -92,7 +92,7 @@ module Aws
 
               it 'packs data as Base64-encoded Marshal' do
                 packed = handler.send(:pack_data, session_data)
-                unpacked = Marshal.load(packed.unpack1('m*'))
+                unpacked = Marshal.load(packed.unpack1('m*')) # rubocop:disable Security/MarshalLoad
                 expect(unpacked).to eq(session_data)
               end
 
