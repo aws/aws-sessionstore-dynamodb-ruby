@@ -74,11 +74,29 @@ module Aws::SessionStore::DynamoDB::Locking
     end
 
     def pack_data(data)
-      JSON.dump(data)
+      case @config.serializer
+      when :marshal
+        [Marshal.dump(data)].pack('m*')
+      else
+        JSON.dump(data)
+      end
     end
 
     def unpack_data(packed_data)
+      case @config.serializer
+      when :marshal
+        Marshal.load(packed_data.unpack1('m*'))
+      when :json
+        JSON.parse(packed_data)
+      when :json_allow_marshal
+        handle_unpack_data_fallback(packed_data)
+      end
+    end
+
+    def handle_unpack_data_fallback(packed_data)
       JSON.parse(packed_data)
+    rescue JSON::ParserError
+      Marshal.load(packed_data.unpack1('m*'))
     end
 
     # Table options for client.
