@@ -101,7 +101,7 @@ module Aws::SessionStore::DynamoDB
     #   - `:json_allow_marshal` - Serialize with JSON, but fall back to deserializing with
     #     Marshal if JSON parsing fails. Use this during migration from Marshal to JSON.
     #   - `:marshal` - Serialize and deserialize with Marshal only (legacy behavior, not
-    #     recommended due to security concerns).
+    #     recommended).
     #
     #   Note: When using `:json` or `:json_allow_marshal`, session data must consist of
     #   JSON-compatible types only (strings, numbers, booleans, arrays, hashes with string
