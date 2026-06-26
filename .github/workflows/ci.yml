@@ -41,9 +41,6 @@ jobs:
       - name: Install gems
         run: |
           bundle config set --local with 'test'
-          if [[ "${{ matrix.ruby }}" == jruby* ]]; then
-            echo 'gem "rbs", "< 4"' >> Gemfile
-          fi
           bundle install
 
       - name: Tests
