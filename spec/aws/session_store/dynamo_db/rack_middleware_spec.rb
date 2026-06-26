@@ -29,7 +29,7 @@ module Aws
         let(:app) { RackMiddleware.new(base_app, options) }
 
         let(:sample_packed_data) do
-          JSON.dump('multiplier' => 1)
+          [Marshal.dump('multiplier' => 1)].pack('m*')
         end
 
         let(:dynamo_db_client) do
@@ -123,6 +123,66 @@ module Aws
 
           ensure_data_updated(false)
           get '/', {}, { 'rack.session' => { 'multiplier' => nil } }
+        end
+
+        context 'with serializer: :json' do
+          let(:options) do
+            {
+              dynamo_db_client: dynamo_db_client,
+              secret_key: 'watermelon_cherries',
+              serializer: :json
+            }
+          end
+
+          let(:sample_packed_data) do
+            JSON.dump('multiplier' => 1)
+          end
+
+          it 'stores and retrieves session data as JSON' do
+            get '/'
+            expect(last_request.session.to_hash).to eq('multiplier' => 1)
+          end
+
+          it 'loads/manipulates a session based on id from HTTP-Cookie' do
+            get '/'
+            expect(last_request.session.to_hash).to eq('multiplier' => 1)
+
+            get '/'
+            expect(last_request.session.to_hash).to eq('multiplier' => 2)
+          end
+
+          it 'raises JSON::ParserError on legacy Marshal data' do
+            marshal_data = [Marshal.dump('multiplier' => 1)].pack('m*')
+            handler = Locking::Base.new(Configuration.new(options))
+            expect { handler.send(:unpack_data, marshal_data) }.to raise_error(JSON::ParserError)
+          end
+        end
+
+        context 'with serializer: :json_allow_marshal' do
+          let(:options) do
+            {
+              dynamo_db_client: dynamo_db_client,
+              secret_key: 'watermelon_cherries',
+              serializer: :json_allow_marshal
+            }
+          end
+
+          let(:sample_packed_data) do
+            [Marshal.dump('multiplier' => 1)].pack('m*')
+          end
+
+          it 'reads legacy Marshal data via fallback' do
+            get '/'
+            expect(last_request.session.to_hash).to eq('multiplier' => 1)
+          end
+
+          it 'writes new data as JSON' do
+            expect(dynamo_db_client).to receive(:update_item) do |opts|
+              data_value = opts[:attribute_updates]['data'][:value]
+              expect { JSON.parse(data_value) }.not_to raise_error
+            end
+            get '/'
+          end
         end
       end
     end

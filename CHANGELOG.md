@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Feature - Replace `Marshal` with `JSON` as the default session serializer. Add `:serializer` configuration option (`:json_allow_marshal`, `:json`, `:marshal`) for controlling serialization behavior. Default `:json_allow_marshal` writes JSON and falls back to reading legacy Marshal data for zero-downtime migration.
+* Feature - Add `:serializer` configuration option (`:marshal`, `:json`, `:json_allow_marshal`). Default remains `:marshal` for backwards compatibility. Set to `:json` or `:json_allow_marshal` to use JSON serialization for session data.
 
 3.0.1 (2024-11-16)
 ------------------

@@ -23,20 +23,29 @@ module Aws
           let(:session_data) { { 'user_id' => 123, 'name' => 'test' } }
 
           describe '#pack_data / #unpack_data' do
-            context 'with serializer: :json (default via :json_allow_marshal)' do
-              it 'packs data as JSON' do
+            context 'with serializer: :marshal (default)' do
+              it 'packs data as Base64-encoded Marshal' do
                 packed = handler.send(:pack_data, session_data)
-                expect(packed).to eq('{"user_id":123,"name":"test"}')
+                unpacked = Marshal.load(packed.unpack1('m*')) # rubocop:disable Security/MarshalLoad
+                expect(unpacked).to eq(session_data)
               end
 
-              it 'unpacks JSON data' do
-                packed = JSON.dump(session_data)
+              it 'unpacks Base64-encoded Marshal data' do
+                packed = [Marshal.dump(session_data)].pack('m*')
                 unpacked = handler.send(:unpack_data, packed)
                 expect(unpacked).to eq(session_data)
               end
             end
 
             context 'with serializer: :json_allow_marshal' do
+              let(:options) do
+                {
+                  dynamo_db_client: dynamo_db_client,
+                  secret_key: 'test_key',
+                  serializer: :json_allow_marshal
+                }
+              end
+
               it 'unpacks legacy Base64-encoded Marshal data' do
                 legacy_packed = [Marshal.dump(session_data)].pack('m*')
                 unpacked = handler.send(:unpack_data, legacy_packed)
@@ -81,27 +90,6 @@ module Aws
               end
             end
 
-            context 'with serializer: :marshal' do
-              let(:options) do
-                {
-                  dynamo_db_client: dynamo_db_client,
-                  secret_key: 'test_key',
-                  serializer: :marshal
-                }
-              end
-
-              it 'packs data as Base64-encoded Marshal' do
-                packed = handler.send(:pack_data, session_data)
-                unpacked = Marshal.load(packed.unpack1('m*')) # rubocop:disable Security/MarshalLoad
-                expect(unpacked).to eq(session_data)
-              end
-
-              it 'unpacks Base64-encoded Marshal data' do
-                packed = [Marshal.dump(session_data)].pack('m*')
-                unpacked = handler.send(:unpack_data, packed)
-                expect(unpacked).to eq(session_data)
-              end
-            end
           end
         end
       end

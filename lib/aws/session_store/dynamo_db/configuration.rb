@@ -58,7 +58,7 @@ module Aws::SessionStore::DynamoDB
       lock_expiry_time: 500,
       lock_retry_delay: 500,
       lock_max_wait_time: 1,
-      serializer: :json_allow_marshal,
+      serializer: :marshal,
       config_file: nil,
       dynamo_db_client: nil
     }.freeze
@@ -95,7 +95,7 @@ module Aws::SessionStore::DynamoDB
     #   to obtain lock once an attempt to obtain the lock has been made and has failed.
     # @option options [Integer] :lock_max_wait_time (500) Maximum time in seconds to wait to acquire the
     #   lock before giving up.
-    # @option options [Symbol] :serializer (:json_allow_marshal) The serializer for session data.
+    # @option options [Symbol] :serializer (:marshal) The serializer for session data.
     #   - `:json` - Serialize and deserialize with JSON only. Raises an error if legacy
     #     Marshal-encoded data is encountered.
     #   - `:json_allow_marshal` - Serialize with JSON, but fall back to deserializing with
