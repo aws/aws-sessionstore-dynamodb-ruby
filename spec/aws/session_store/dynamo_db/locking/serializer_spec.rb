@@ -89,7 +89,6 @@ module Aws
                 expect { handler.send(:unpack_data, legacy_packed) }.to raise_error(JSON::ParserError)
               end
             end
-
           end
         end
       end
