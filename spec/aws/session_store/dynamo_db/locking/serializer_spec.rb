@@ -23,17 +23,21 @@ module Aws
           let(:session_data) { { 'user_id' => 123, 'name' => 'test' } }
 
           describe '#pack_data / #unpack_data' do
-            context 'with serializer: :marshal (default)' do
-              it 'packs data as Base64-encoded Marshal' do
+            context 'with serializer: :json (default)' do
+              it 'packs data as JSON' do
                 packed = handler.send(:pack_data, session_data)
-                unpacked = Marshal.load(packed.unpack1('m*')) # rubocop:disable Security/MarshalLoad
+                expect(packed).to eq('{"user_id":123,"name":"test"}')
+              end
+
+              it 'unpacks JSON data' do
+                packed = JSON.dump(session_data)
+                unpacked = handler.send(:unpack_data, packed)
                 expect(unpacked).to eq(session_data)
               end
 
-              it 'unpacks Base64-encoded Marshal data' do
-                packed = [Marshal.dump(session_data)].pack('m*')
-                unpacked = handler.send(:unpack_data, packed)
-                expect(unpacked).to eq(session_data)
+              it 'raises on legacy Marshal data' do
+                legacy_packed = [Marshal.dump(session_data)].pack('m*')
+                expect { handler.send(:unpack_data, legacy_packed) }.to raise_error(JSON::ParserError)
               end
             end
 
