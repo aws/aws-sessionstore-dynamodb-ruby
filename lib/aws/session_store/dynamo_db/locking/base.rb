@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module Aws::SessionStore::DynamoDB::Locking
   # Handles session management.
   class Base
@@ -71,13 +73,29 @@ module Aws::SessionStore::DynamoDB::Locking
       merge_all(table_opts(sid), attribute_opts)
     end
 
-    # Marshal the data.
     def pack_data(data)
-      [Marshal.dump(data)].pack('m*')
+      case @config.serializer
+      when :marshal
+        [Marshal.dump(data)].pack('m*')
+      else
+        JSON.dump(data)
+      end
     end
 
-    # Unmarshal the data.
     def unpack_data(packed_data)
+      case @config.serializer
+      when :marshal
+        Marshal.load(packed_data.unpack1('m*'))
+      when :json
+        JSON.parse(packed_data)
+      when :json_allow_marshal
+        handle_unpack_data_fallback(packed_data)
+      end
+    end
+
+    def handle_unpack_data_fallback(packed_data)
+      JSON.parse(packed_data)
+    rescue JSON::ParserError
       Marshal.load(packed_data.unpack1('m*'))
     end
 
