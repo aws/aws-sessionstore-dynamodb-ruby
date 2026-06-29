@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Feature - Change `:serializer` configuration option defualt from `:marshal` to `:json`. For migration, please use `:json_allow_marshal`.
+* Feature - Change `:serializer` configuration option default from `:marshal` to `:json`. For migration, please use `:json_allow_marshal`.
 
 3.1.0 (2026-06-29)
 ------------------
