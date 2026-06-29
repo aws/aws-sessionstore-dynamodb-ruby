@@ -1,4 +1,4 @@
-Unreleased Changes
+3.1.0 (2026-06-29)
 ------------------
 
 * Feature - Add `:serializer` configuration option (`:marshal`, `:json`, `:json_allow_marshal`). Default remains `:marshal` for backwards compatibility. Set to `:json` or `:json_allow_marshal` to use JSON serialization for session data.
