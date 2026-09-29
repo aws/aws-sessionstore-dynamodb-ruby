@@ -60,9 +60,9 @@ body:
     validations:
       required: false
   - type: input
-    id: aws-sessionstore-dynamodb-ruby version
+    id: sdk-version
     attributes:
-      label: Gem version used
+      label: aws-sessionstore-dynamodb gem version
     validations:
       required: true
   - type: input
