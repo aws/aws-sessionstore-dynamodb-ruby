@@ -20,14 +20,12 @@ module Aws::SessionStore::DynamoDB::Errors
 
     # Raises {HARD_ERRORS} up the Rack stack.
     # Places all other errors in Racks error stream.
-    # rubocop:disable Naming/PredicateMethod
-    def handle_error(error, env = {})
+    def handle_error(error, env = {}) # rubocop:disable Naming/PredicateMethod
       raise error if HARD_ERRORS.include?(error.class) || @raise_errors
 
       store_error(error, env)
       false
     end
-    # rubocop:enable Naming/PredicateMethod
 
     # Sends error to error stream
     def store_error(error, env = {})
