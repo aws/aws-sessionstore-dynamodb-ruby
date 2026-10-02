@@ -21,8 +21,7 @@ module Aws::SessionStore::DynamoDB::Locking
     private
 
     # Get session with implemented locking strategy.
-    # rubocop:disable Metrics/MethodLength
-    def get_session_with_lock(env, sid)
+    def get_session_with_lock(env, sid) # rubocop:disable Metrics/MethodLength
       expires_at = nil
       result = nil
       max_attempt_date = Time.now.to_f + @config.lock_max_wait_time
@@ -40,7 +39,6 @@ module Aws::SessionStore::DynamoDB::Locking
       end
       get_data(env, result)
     end
-    # rubocop:enable Metrics/MethodLength
 
     # Determine if session has waited too long to obtain lock.
     #
